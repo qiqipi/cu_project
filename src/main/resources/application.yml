@@ -1,0 +1,44 @@
+server:
+  port: 5001
+  servlet:
+    session:
+#      设置超时时间为3分钟
+      timeout: Pt10m
+
+spring:
+  # 39.99.215.48是阿里云服务器
+  datasource:
+     url: jdbc:mysql://localhost:3306/new_test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&allowMultiQueries=true
+#     url: jdbc:mysql://39.99.215.48:3306/new_test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&allowMultiQueries=true
+     driver-class-name: com.mysql.cj.jdbc.Driver
+     username: root
+     password: root
+
+  servlet:
+     multipart:
+        max-file-size: 20MB     #设置单个文件最大长度
+        max-request-size: 50MB  #最大请求文件的大小
+        file-size-threshold: 20MB #当文件达到多少时进行磁盘写入
+
+
+
+#  datasource:
+#   url: jdbc:mysql://localhost:3306/sjk_cu_su?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+#   driver-class-name: com.mysql.cj.jdbc.Driver
+#   username: root
+#   password: 123456
+
+
+
+mybatis:
+  mapper-locations: classpath:Mapper/*.xml
+
+swagger:
+  enable: true
+
+#logging:
+#  level:
+#    cn.jay.repository: info
+#  file:
+#    path: /home/jieruwang/houtaiJava/operationlogs
+#    name: operation.log

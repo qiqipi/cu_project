@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liantong.demo_part2.Mapper.PlanMapper">
+
+
+
+
+    <select id="testSelect" resultType="java.util.HashMap" parameterType="String">
+        ${sql}
+    </select>
+
+
+    <insert id="select_data_insert_inot_result" parameterType="String">
+        ${sql}
+    </insert>
+
+    <update id="update_factor_weight" parameterType="String">
+        update pon_mark_factor${timeFlag}
+        set
+        <if test="meal_weight != null and meal_weight!= ''">
+            meal_weight=#{meal_weight},
+        </if>
+        <if test="flow_weight != null and meal_weight!= ''">
+            flow_weight=#{flow_weight},
+        </if>
+        <if test="count_weight != null and meal_weight!= ''">
+            count_weight=#{count_weight},
+        </if>
+          future_field = '1'
+    </update>
+
+    <select id="get_factors" resultType="java.util.HashMap">
+        select meal_weight,flow_weight,count_weight from pon_mark_factor${timeFlag} where id =1
+    </select>
+
+    <update id="update_score" parameterType="String">
+        ${sql}
+    </update>
+
+
+    <select id="find_olt_info_by_station" resultType="java.util.HashMap">
+        select `olt名称` as olt_pon_name,`厂家` as vendor,`设备类型` as model,substring_index(`olt名称`,'_',1) as station from base_pon_traffic${timeFlag}  where `olt名称` is not NULL and substring_index(`olt名称`,'_',1)=#{station} group by `olt名称`,`厂家`,`设备类型`,substring_index(`olt名称`,'_',1)
+    </select>
+
+    <select id="select_pon_port_data_by_olt_name" resultType="java.util.HashMap">
+        select `olt名称` as olt_pon_name,`PON板号` as pon_board_number,`PON口号` as pon_port_number,`设备类型` as model from base_pon_traffic${timeFlag}  where `olt名称`=#{olt_name} ORDER BY `PON板号` ,`PON口号`
+    </select>
+
+    <select id="select_pon_data_by_olt_name" resultType="java.util.HashMap">
+        select `olt名称` as olt_pon_name,`PON板号` as pon_board_number,`带宽`as bandwidth from base_pon_traffic${timeFlag}  where `olt名称`=#{olt_name} group by `PON板号`,bandwidth ORDER BY `PON板号`
+    </select>
+
+    <insert id="insert_into_plan_table" >
+        insert into 20200604_plan (olt_name,pon_board_used,pon_port_used,station) values (#{olt_name},#{board_str},#{port_str},#{station})
+    </insert>
+    <select id="select_score_result_by_station" resultType="java.util.HashMap">
+      select * from pon_mark_result${timeFlag} where station = #{station} and operator=#{operator} and operate_time= #{date_time} and priority !='0'  order by priority , score  desc  limit #{nums}
+    </select>
+    <select id="select_olt_state_by_station" resultType="java.util.HashMap">
+        select * from 20200604_plan where station = #{station}
+    </select>
+
+
+
+    <select id="get_department_of_scored" resultType="java.util.HashMap">
+        select department from pon_mark_result${timeFlag} where operate_time = #{time} GROUP BY department
+    </select>
+
+    <select id="get_station_of_scored" resultType="java.util.HashMap" >
+        select station from pon_mark_result${timeFlag} where department = #{department} and operate_time = #{time} GROUP BY station
+    </select>
+
+    <select id="selectAllStation" resultType="String" >
+        select distinct substring_index(`olt名称`,'_',1) as station from base_pon_traffic${timeFlag}
+    </select>
+
+
+
+
+
+
+</mapper>

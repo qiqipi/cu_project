@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liantong.demo_part2.Mapper.PONMapper">
+    <select id="testReturnMap" resultType="java.util.HashMap">
+        select * from cu_user;
+    </select>
+
+
+    <select id="returnDepartmentOf_1000M_Table" resultType="java.util.HashMap">
+        select `分公司` as department from middle_pon_aaa_user${timeFlag} GROUP BY `分公司`;
+    </select>
+
+    <select id="returnDepartmentOf_500M_Table" resultType="java.util.HashMap">
+        select `分公司` as department from middle_pon_aaa_user${timeFlag} GROUP BY `分公司`;
+    </select>
+
+    <select id="returnDepartmentOf_HighDemand_Table" resultType="java.util.HashMap">
+        select `分公司` as department from middle_pon_aaa_user${timeFlag} GROUP BY `分公司`;
+    </select>
+
+
+    <select id="returnOLTNameOfOf_1000M_Table" resultType="java.util.HashMap" parameterType="String">
+        select `olt名称` as OLT_name from middle_pon_aaa_user${timeFlag}   where `分公司`= #{department} GROUP BY `olt名称`;
+    </select>
+
+    <select id="returnOLTNameOfOf_500M_Table" resultType="java.util.HashMap" parameterType="String">
+        select `olt名称` as OLT_name from middle_pon_aaa_user${timeFlag}   where `分公司`= #{department} GROUP BY `olt名称`;
+    </select>
+
+    <select id="returnOLTNameOfOf_HighDemand_Table" resultType="java.util.HashMap" parameterType="String">
+        select `olt名称` as OLT_name from middle_pon_aaa_user${timeFlag}   where `分公司`= #{department} GROUP BY `olt名称`;
+    </select>
+
+
+    <select id="returnPON_PortNameOf_1000M_Table" resultType="java.util.HashMap" parameterType="String">
+        select `端口` as PON_Port from middle_pon_aaa_user${timeFlag}    where `分公司`= #{department} and `olt名称`= #{OLT_name} GROUP BY `端口`;
+    </select>
+
+    <select id="returnPON_PortNameOf_500M_Table" resultType="java.util.HashMap" parameterType="String">
+        select `端口` as PON_Port from middle_pon_aaa_user${timeFlag}    where `分公司`= #{department} and `olt名称`= #{OLT_name} GROUP BY `端口`;
+    </select>
+
+    <select id="returnPON_PortNameOf_HighDemand_Table" resultType="java.util.HashMap" parameterType="String">
+        select `端口` as PON_Port from middle_pon_aaa_user${timeFlag}    where `分公司`= #{department} and `olt名称`= #{OLT_name} GROUP BY `端口`;
+    </select>
+
+
+    <select id="return_1000MTable_Not10G_userNum" resultType="java.util.HashMap" parameterType="String">
+
+        <choose>
+            <when test="department != null and OLT_name != null and board!= null and port !=null">
+                select sum(`_1000m_count`) as Not_10G_user_num from middle_pon_aaa_user${timeFlag}  where
+                `分公司` = #{department} and `olt名称` = #{OLT_name} and `PON板号` = #{board} and `PON口号` = #{port} and
+                `带宽` != 10000
+            </when>
+            <when test="department != null and OLT_name != null and board!= null ">
+                select sum( `_1000m_count` ) as Not_10G_user_num from middle_pon_aaa_user${timeFlag}  where `分公司` =
+                #{department} and `olt名称` = #{OLT_name} and `PON板号` = #{board} and `带宽` != 10000
+            </when>
+            <when test="department != null and OLT_name != null
+                ">
+                select sum(`_1000m_count`) as Not_10G_user_num from middle_pon_aaa_user${timeFlag}  where `分公司` =
+                #{department} and `olt名称` = #{OLT_name} and `带宽` != 10000
+            </when>
+            <when test="department != null
+                ">
+                select sum(`_1000m_count`) as Not_10G_user_num from middle_pon_aaa_user${timeFlag}  where `分公司`=#{department} and
+                `带宽` != 10000
+            </when>
+            <otherwise>
+                select sum(`_1000m_count`) as Not_10G_user_num from middle_pon_aaa_user${timeFlag}  where `带宽` != 10000
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="return_1000MTable_10G_userNum" resultType="java.util.HashMap" parameterType="String">
+
+        <choose>
+            <when test="department != null and OLT_name != null and board!= null and port !=null">
+                select sum( `_1000m_count`) as 10G_user_num from middle_pon_aaa_user${timeFlag}  where
+                `分公司` = #{department} and `olt名称` = #{OLT_name} and `PON板号` = #{board} and `PON口号` = #{port} and
+                `带宽` = 10000
+            </when>
+            <when test="department != null and OLT_name != null and board!= null ">
+                select sum(`_1000m_count`) as 10G_user_num from middle_pon_aaa_user${timeFlag}  where `分公司` =
+                #{department} and `olt名称` = #{OLT_name} and `PON板号` = #{board} and `带宽` =10000
+            </when>
+            <when test="department != null and OLT_name != null
+                ">
+                select sum(`_1000m_count`) as 10G_user_num from middle_pon_aaa_user${timeFlag}  where `分公司` =
+                #{department} and `olt名称` = #{OLT_name} and `带宽` = 10000
+            </when>
+            <when test="department != null
+                ">
+                select sum(`_1000m_count`) as 10G_user_num from middle_pon_aaa_user${timeFlag}  where `分公司` = #{department} and
+                `带宽` = 10000
+            </when>
+            <otherwise>
+                select sum(`_1000m_count`) as 10G_user_num from middle_pon_aaa_user${timeFlag}  where `带宽` = 10000
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="return_1000MTable_Not10G_OLTNum" resultType="java.util.HashMap" parameterType="String">
+        <choose>
+            <when test="department != null and OLT_name != null
+                ">
+                select `厂家` as vendor, `设备类型` as model ,count(`厂家`) as count from middle_pon_aaa_user${timeFlag}  where `分公司` = #{department} and
+                `olt名称` = #{OLT_name} and `带宽` !=10000 GROUP BY `厂家`, `设备类型`
+            </when>
+            <when test="department != null">
+                select `厂家` as vendor, `设备类型` as model ,count(`厂家`) as count from middle_pon_aaa_user${timeFlag}  where `分公司` = #{department} and
+                `带宽` != 10000 GROUP BY `厂家`, `设备类型`
+            </when>
+            <otherwise>
+                select `厂家` as vendor , `设备类型` as model ,count(`厂家`) as count from middle_pon_aaa_user${timeFlag}  where `带宽` != 10000 GROUP BY
+                `厂家`, `设备类型`
+            </otherwise>
+        </choose>
+    </select>
+
+
+
+
+
+
+
+
+
+
+    <select id="return_1000MTable_Not10G_Pon_BoardNum" resultType="Integer" parameterType="String">
+      <choose>
+            <when test="department != null and OLT_name != null
+                ">
+                select COUNT(*)  as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` !=10000 and `分公司`=#{department} and `olt名称` = #{OLT_name} group by `olt名称`,`PON板号`) r1
+            </when>
+            <when test="department != null">
+                select COUNT(*)  as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` !=10000 and `分公司`=#{department} group by `olt名称`,`PON板号`) r1
+            </when>
+            <otherwise>
+                select COUNT(*) as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` !=10000  group by `olt名称`,`PON板号`) r1
+            </otherwise>
+        </choose>
+    </select>
+
+
+    <select id="return_1000MTable_Not10G_Pon_PortNum" resultType="Integer" parameterType="String">
+        <choose>
+            <when test="department != null and OLT_name != null
+                ">
+                select COUNT(*) as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` !=10000 and `分公司`=#{department} and `olt名称` = #{OLT_name} group by `olt名称`,`PON板号`,`PON口号`) r1
+            </when>
+            <when test="department != null">
+                select COUNT(*) as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` !=10000 and `分公司`=#{department} group by `olt名称`,`PON板号`,`PON口号`) r1
+            </when>
+            <otherwise>
+                select COUNT(*) as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` !=10000  group by `olt名称`,`PON板号`,`PON口号`) r1
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="return_1000MTable_10G_Pon_BoardNum" resultType="Integer" parameterType="String">
+
+        <choose>
+            <when test="department != null and OLT_name != null
+                ">
+                select COUNT(*)  as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` =10000 and `分公司`=#{department} and `olt名称` = #{OLT_name} group by `olt名称`,`PON板号`) r1
+            </when>
+            <when test="department != null">
+                select COUNT(*)  as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` =10000 and `分公司`=#{department} group by `olt名称`,`PON板号`) r1
+            </when>
+            <otherwise>
+                select COUNT(*) as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` =10000  group by `olt名称`,`PON板号`) r1
+            </otherwise>
+        </choose>
+    </select>
+
+
+    <select id="return_1000MTable_10G_Pon_PortNum" resultType="Integer" parameterType="String">
+        <choose>
+            <when test="department != null and OLT_name != null
+                ">
+                select COUNT(*) as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` =10000 and `分公司`=#{department} and `olt名称` = #{OLT_name} group by `olt名称`,`PON板号`,`PON口号`) r1
+            </when>
+            <when test="department != null">
+                select COUNT(*) as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` =10000 and `分公司`=#{department} group by `olt名称`,`PON板号`,`PON口号`) r1
+            </when>
+            <otherwise>
+                select COUNT(*) as sum from (select count(`PON板号`) as count  from middle_pon_aaa_user${timeFlag}  where  `带宽` =10000  group by `olt名称`,`PON板号`,`PON口号`) r1
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="return_1000M_table_10G" resultType="java.util.HashMap" parameterType="String">
+        <choose>
+            <when test="department != null and OLT_name != null">
+                select * from middle_pon_aaa_user${timeFlag}  where `带宽` =10000 and `分公司`=#{department} and `olt名称` = #{OLT_name};
+            </when>
+            <when test="department != null">
+                select * from middle_pon_aaa_user${timeFlag}  where `带宽` =10000 and `分公司`=#{department} ;
+            </when>
+            <otherwise>
+                select * from middle_pon_aaa_user${timeFlag}  where `带宽` =10000 ;
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="return_1000M_table_not_10G" resultType="java.util.HashMap" parameterType="String">
+        <choose>
+            <when test="department != null and OLT_name != null">
+                select * from middle_pon_aaa_user${timeFlag}  where `带宽` !=10000 and `分公司`=#{department} and `olt名称` = #{OLT_name};
+            </when>
+            <when test="department != null">
+                select * from middle_pon_aaa_user${timeFlag}  where `带宽` !=10000 and `分公司`=#{department} ;
+            </when>
+            <otherwise>
+                select * from middle_pon_aaa_user${timeFlag}  where `带宽` !=10000 ;
+            </otherwise>
+        </choose>
+    </select>
+
+
+
+
+
+    <select id="return_1000M_table_All_Department" resultType="java.util.HashMap">
+        select  `分公司` as department from middle_pon_aaa_user${timeFlag} group by `分公司`;
+    </select>
+
+    <select id="return_1000M_table_All_OLTName" resultType="java.util.HashMap" parameterType="String">
+        select `分公司` as department  ,`olt名称` as OLT_name from middle_pon_aaa_user${timeFlag}  where `分公司`=#{department} group by `olt名称`;
+    </select>
+
+
+
+</mapper>

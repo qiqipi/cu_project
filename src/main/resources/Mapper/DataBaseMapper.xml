@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liantong.demo_part2.Mapper.DataBaseMapper">
+
+    <insert id="backUp" parameterType="String">
+        insert into backup_list `backup_time` values #{time}
+    </insert>
+
+    <delete id="delete" parameterType="String">
+        delete from backup_list where `backup_time` &lt;= #{time}
+    </delete>
+
+    <select id="countMiddle1" parameterType="string" resultType="int">
+        select  count(*) from middle_pon_aaa_divide${currentDate}
+    </select>
+
+    <select id="getLog" resultType="java.util.HashMap">
+       select * from log_information 
+    </select>
+
+    <select id="judgeExist" resultType="java.lang.Integer">
+       select count(*) from log_information where `导入表名`=#{name} and `表名后缀`=#{date} and `状态`="操作成功"
+    </select>
+
+    <select id="getMassage" resultType="java.util.Map">
+        select * from log_information where `表名后缀` =#{suffix} and `状态`="操作成功"
+    </select>
+
+    <select id="homeMassage" parameterType="string" resultType="java.util.Map">
+        select count(*) as num, `速率` from base_user_divide${currentDate}  where 1=1 group by `速率`
+    </select>
+
+    <select id="returnMeans" resultType="java.util.Map">
+        select c.`速率` as name , count(*) as cnt from (select a.`速率`, a.`分公司`,a.`olt名称`,b.`带宽` from
+        middle_pon_aaa_divide${timeFlag} as a left join base_pon_traffic${timeFlag} as b on a.`olt名称` = b.`olt名称` and
+        a.`PON板号`=b.`PON板号` and a.`PON口号` = b.`PON口号` ) as c where c.`带宽` = 10000
+        <if test="department != null">
+            and c.`分公司` = #{department}
+        </if>
+        <if test="olt != null">
+            and c.`olt名称` = #{olt}
+        </if>
+        group by c.`速率`
+    </select>
+
+    <insert id="insertData">
+        insert into ${tableName}
+        <foreach collection="column" item="item" separator="," open="(" close=")">
+            ${item}
+        </foreach>
+        values
+        <foreach collection="data" open="(" close=")" separator="," item="item2">
+            "${item2}"
+        </foreach>
+    </insert>
+    <update id="changeDate">
+        ALTER TABLE ${tableName} CHANGE `采集时间` `采集时间` DATE;
+    </update>
+
+    <insert id="insertMiddle1" parameterType="string">
+--          insert into middle_pon_aaa_divide${currentDate} (`用户ID`,`上行流量`,`下行流量`,`在线时长`,`日期`,`速率`,`分公司`,`olt名称`,`PON板号`,PON口号,`ONU设备型号`,`IPTV及沃TV账号`,`局站`,`是否IPTV用户`,`大工商类型`,`上网账号`,`对应的固话号码`,`OLT管理IP`) select c.`用户ID`, c.`上行流量`,c.`下行流量`,c.`在线时长`,c.`日期`,b.`速率`,a.`分公司`,a.`OLT`,substring_index(substring_index(a.`OLT端口`,'-',-2),'-',1),substring_index(substring_index(a.`OLT端口`,'-',-2),'-',-1),b.`ONU设备型号`,b.`IPTV及沃TV账号`,substring_index(a.`OLT端口`,'_',1),b.`是否IPTV用户`,b.`大公商类型`,b.`上网账号`,b.`对应的固话号码`,a.`OLT管理IP` from base_line${currentDate} as a left join base_user_divide${currentDate} as b on a.CODE_NAME=b.`设备号码` left join base_aaa${currentDate} as c on a.CODE_NAME=c.`用户ID`;
+         insert into middle_pon_aaa_divide${currentDate} (`用户ID`,`上行流量`,`下行流量`,`在线时长`,`日期`,`速率`,`分公司`,`olt名称`,`PON板号`,PON口号,`ONU设备型号`,`IPTV及沃TV账号`,`局站`,`是否IPTV用户`,`大工商类型`,`上网账号`,`对应的固话号码`,`OLT管理IP`) select c.`用户ID`, c.`上行流量`,c.`下行流量`,c.`在线时长`,c.`日期`,b.`速率`,a.`分公司`,a.`OLT`,substring_index(substring_index(a.`OLT端口`,'-',-2),'-',1),substring_index(substring_index(a.`OLT端口`,'-',-2),'-',-1),b.`ONU设备型号`,b.`IPTV及沃TV账号`,substring_index(a.`OLT端口`,'_',1),b.`是否IPTV用户`,b.`大公商类型`,b.`上网账号`,b.`对应的固话号码`,a.`OLT管理IP` from base_line${currentDate} as a left join base_user_divide${currentDate} as b on a.CODE_NAME=b.`设备号码` left join (select `用户ID`, sum(`上行流量`) as `上行流量` ,sum(`下行流量`) as `下行流量` , sum(`在线时长`) as `在线时长`, `日期` from base_aaa${currentDate} group by `用户ID`, `日期` )as c on a.CODE_NAME=c.`用户ID`;
+    </insert>
+
+    <insert id="insertMiddle2" parameterType="string">
+         insert into middle_pon_aaa_user${currentDate} (`分公司`,`olt名称`,`端口`,`局站`,`ip`,`厂家`,`设备类型`,`带宽`,`流入峰值`,`流入峰值利用率`,`流入均值`,`流入均值利用率`,`流出峰值`,`流出峰值利用率`,`流出均值`,`流出均值利用率`,`PON板号`,`PON口号`) select `分公司`,`olt名称`,`端口`,substring_index(`olt名称`,'_',1),`ip`,`厂家`,`设备类型`,`带宽`,`流入峰值`,`流入峰值利用率`,`流入均值`,`流入均值利用率`,`流出峰值`,`流出峰值利用率`,`流出均值`,`流出均值利用率`,`PON板号`,`PON口号` from base_pon_traffic${currentDate}
+    </insert>
+
+    <insert id="insertParms" parameterType="string">
+        insert into pon_mark_parms${currentDate} (`olt_name`,`pon_port`,`station`,`bandwidth`,`model`,`vendor`,`up_avg`,`up_peak`,`down_avg`,`down_peak`,`department`,`usernum_over_1000m`,`usernum_over_500m`,`usernum_top10`,`usernum_total`) select b.`olt名称`,b.`端口`,b.`局站`,b.`带宽`,b.`设备类型`,b.`厂家`,b.`流入均值`,b.`流入峰值`,b.`流出均值`,b.`流出峰值`,b.`分公司`,b.`_1000m_count`,b.`_500m_count`,b.`_usernum_top10`,b.`user` from middle_pon_aaa_user${currentDate} as b
+    </insert>
+    <insert id="insertFactor" parameterType="string">
+        insert into pon_mark_factor${currentDate} (`id`,`meal_weight`,`flow_weight`,`count_weight`,`upgrade_strategy`,`future_field`) values (1,10,10,10,0.2,1)
+    </insert>
+
+    <insert id="addNotes" parameterType="string">
+        insert into log_information (`导入日期`, `导入表名`,`操作人员`,`注释`,`状态`,`表名后缀`,`记录条数`) values (#{time},#{tableName},#{operator} ,#{notes},#{status},#{date} ,#{nums})
+    </insert>
+
+    <update id="creatBase1" parameterType="String">
+        create table ${tableName}
+    (
+    `日期`   varchar(255) null,
+    `用户ID` varchar(255) null,
+    `上行流量` decimal(10,2) null,
+    `下行流量` decimal(10,2) null,
+    `在线时长` int(11) null,
+    `城市`   varchar(255) null,
+    `类型`   varchar(255) null
+   );
+    </update>
+    <update id="creatBase2" parameterType="String">
+       create table ${tableName}
+   (
+    `MAC`       varchar(255) null,
+    `LOID`       varchar(255) null,
+    `OLT`        varchar(255) null,
+    `OLT端口`      varchar(255) null,
+    `分局`         varchar(255) null,
+    `分公司`        varchar(255) null,
+    `OLT管理IP`    varchar(255) null,
+    `CODE_NAME`    varchar(255) null,
+    `七级标准地址ID`   varchar(255) null,
+    `七级标准地址`     varchar(255) null,
+    `归属六级标准地址ID` varchar(255) null,
+    `楼宇编码`       varchar(255) null,
+    `楼宇名称`       varchar(255) null,
+    `经度`         varchar(255) null,
+    `纬度`         varchar(255) null,
+    `归属五级标准地址ID` varchar(255) null,
+    `小区`         varchar(255) null,
+    `光分纤盒`       varchar(255) null,
+    `光交接箱`       varchar(255) null,
+    `一级光分路器`     varchar(255) null,
+    `二级光分路器`     varchar(255) null
+   );
+    </update>
+    <update id="creatBase3" parameterType="String">
+        create table ${tableName}
+   (
+    `分公司`             varchar(255) null,
+    `olt名称`           varchar(255) null,
+    `ip`                varchar(255) null,
+    `厂家`              varchar(255) null,
+    `设备类型`            varchar(255) null,
+    `带宽`              int(11) null,
+    `端口`              varchar(255) null,
+    `流入峰值`            varchar(255) null,
+    `流入峰值利用率`         varchar(255) null,
+    `流入均值`            varchar(255) null,
+    `流入均值利用率`         varchar(255) null,
+    `流出峰值`            varchar(255) null,
+    `流出峰值利用率`         varchar(255) null,
+    `流出均值`            varchar(255) null,
+    `流出均值利用率`         varchar(255) null,
+    `PON板号`           varchar(255) null,
+    `PON口号`           varchar(255) null,
+    `IP_and_PON_port` varchar(255) null,
+    `采集时间`          varchar(255) null
+   );
+    </update>
+    <update id="creatBase4" parameterType="String">
+        create table ${tableName}
+   (
+    `分公司`     varchar(255) null,
+    `olt名称`   varchar(255) null,
+    `ip`      varchar(255) null,
+    `厂家`      varchar(255) null,
+    `设备类型`    varchar(255) null,
+    `带宽`      int(11) null,
+    `端口`      varchar(255) null,
+    `流入峰值`    decimal(10,2) null,
+    `流入峰值利用率` decimal(10,2) null,
+    `流入均值`   decimal(10,2) null,
+    `流入均值利用率` decimal(10,2) null,
+    `流出峰值`    decimal(10,2) null,
+    `流出峰值利用率` decimal(10,2) null,
+    `流出均值`    decimal(10,2) null,
+    `流出均值利用率` decimal(10,2) null,
+    `上联板号`   varchar(255) null,
+    `上联口号`   varchar(255) null
+     );
+    </update>
+    <update id="creatBase5" parameterType="String">
+        create table ${tableName}
+    (
+    `部门名称`       varchar(255) null,
+    `设备号码`       varchar(255) null,
+    `大公商类型`      varchar(255) null,
+    `上网账号`       varchar(255) null,
+    `对应的固话号码`    varchar(255) null,
+    `是否IPTV用户`   varchar(255) null,
+    `IPTV及沃TV账号` varchar(255) null,
+    `ONU设备型号`    varchar(255) null,
+    `速率`         varchar(255) null
+    );
+    </update>
+
+    <update id="creatMiddle1" parameterType="string">
+        create table middle_pon_aaa_divide${currentDate}
+     (
+    `用户ID`       varchar(255) null,
+    `上行流量`       decimal(10,2) null,
+    `下行流量`       decimal(10,2) null,
+    `在线时长`       varchar(255) null,
+    `日期`         varchar(255) null,
+    `速率`         varchar(255) null,
+    `分公司`        varchar(255) null,
+    `olt名称`      varchar(255) null,
+    `PON板号`      varchar(255) null,
+    `PON口号`      varchar(255) null,
+    `ONU设备型号`    varchar(255) null,
+    `IPTV及沃TV账号` varchar(255) null,
+    `局站`         varchar(255) null,
+    `是否IPTV用户`   varchar(255) null,
+    `大工商类型`      varchar(255) null,
+    `上网账号`       varchar(255) null,
+    `对应的固话号码`    varchar(255) null,
+    `OLT管理IP`    varchar(255) null,
+    `是否为top10`   varchar(255) null
+      );
+    </update>
+
+<!--    <update id="creatMiddle3" parameterType="string">-->
+<!--        create table middle3${currentDate}-->
+<!--     (-->
+<!--    `用户ID`       varchar(255) null,-->
+<!--    `上行流量`       decimal(10,2) null,-->
+<!--    `下行流量`       decimal(10,2) null,-->
+<!--    `在线时长`       varchar(255) null,-->
+<!--    `日期`         varchar(255) null,-->
+<!--    `速率`         varchar(255) null,-->
+<!--    `分公司`        varchar(255) null,-->
+<!--    `olt名称`      varchar(255) null,-->
+<!--    `PON板号`      varchar(255) null,-->
+<!--    `PON口号`      varchar(255) null,-->
+<!--    `ONU设备型号`    varchar(255) null,-->
+<!--    `IPTV及沃TV账号` varchar(255) null,-->
+<!--    `局站`         varchar(255) null,-->
+<!--    `是否IPTV用户`   varchar(255) null,-->
+<!--    `大工商类型`      varchar(255) null,-->
+<!--    `上网账号`       varchar(255) null,-->
+<!--    `对应的固话号码`    varchar(255) null,-->
+<!--    `OLT管理IP`    varchar(255) null,-->
+<!--    `是否为top10`   varchar(255) null-->
+<!--      );-->
+<!--    </update>-->
+
+
+    <update id="creatMiddle2" parameterType="string">
+    create table middle_pon_aaa_user${currentDate}
+   (
+    `分公司`               varchar(255)              null,
+    `olt名称`             varchar(200)              null,
+    `端口`                varchar(255)              null,
+    `局站`                varchar(255)              null,
+    `ip`                varchar(255)              null,
+    `厂家`                varchar(255)              null,
+    `设备类型`              varchar(255)              null,
+    `带宽`                varchar(255)              null,
+    `流入峰值`              varchar(255)              null,
+    `流入峰值利用率`           varchar(255)              null,
+    `流入均值`              varchar(255)              null,
+    `流入均值利用率`           varchar(255)              null,
+    `流出峰值`              varchar(255)              null,
+    `流出峰值利用率`           varchar(255)              null,
+    `流出均值`              varchar(255)              null,
+    `流出均值利用率`           varchar(255)              null,
+    `PON板号`             int default -1            null,
+    `PON口号`             int default -1            null,
+    `user`              int(11)                       null,
+    `_1000m_count`      int(11)                       null,
+    `_500m_count`       int(11)                       null,
+    `_300m_count`       int(11)                       null,
+    `_200m_count`       int(11)                       null,
+    `_100m_count`       int(11)                       null,
+    `_50m_count`        int(11)                       null,
+    `_1000m_iptv_count` int(11)                       null,
+    `_500m_iptv_count`  int(11)                       null,
+    `_300m_iptv_count`  int(11)                       null,
+    `_200m_iptv_count`  int(11)                       null,
+    `_100m_iptv_count`  int(11)                       null,
+    `_50m_iptv_count`   int(11)                       null,
+    `_usernum_top10`    int(11)                       null,
+    `公众客户`           int(11)                       null,
+    `商务客户`           int(11)                       null,
+    `大客户`             int(11)                       null
+);
+
+    </update>
+
+    <update id="updateMiddle1">
+
+    update middle_pon_aaa_divide${currentDate} as b  inner join (select a.`是否为top10`, a.`用户ID` from  middle_pon_aaa_divide${currentDate} as a order by a.`下行流量` desc limit ${count}) as c on b.`用户ID`=c.`用户ID` set b.`是否为top10`='是' where 1=1
+--     update middle3${currentDate} as b  inner join (select a.`是否为top10`, a.`用户ID` from  middle_pon_aaa_divide${currentDate} as a order by a.`下行流量` desc limit ${count}) as c on b.`用户ID`=c.`用户ID` set b.`是否为top10`='是' where 1=1
+
+    </update>
+
+    <update id="updateMiddle2" parameterType="string">
+--     update middle_pon_aaa_user${currentDate} as c left join  (select a.`olt名称`,a.`PON板号`,a.`PON口号`,count(*) as user,sum(if(`是否为top10`='是',1,0)) as `usernum_top10`, sum(if(`速率`='1000M',1,0)) as `_1000m_count` ,sum(if(`速率`='500M',1,0)) as `_500m_count` , sum(if(`速率`='300M',1,0)) as `_300m_count`, sum(if(`速率`='200M',1,0)) as `_200m_count` , sum(if(`速率`='100M',1,0)) as `_100m_count`, sum(if(`速率`='50M',1,0)) as `_50m_count` ,sum(if(`速率`='1000M' and `是否IPTV用户`,1,0)) as `_1000m_iptv_count`,sum(if(`速率`='500M' and `是否IPTV用户`,1,0)) as `_500m_iptv_count`,sum(if(`速率`='300M' and `是否IPTV用户`,1,0)) as `_300m_iptv_count`,sum(if(`速率`='200M' and `是否IPTV用户`,1,0)) as `_200m_iptv_count`,sum(if(`速率`='100M' and `是否IPTV用户`,1,0)) as `_100m_iptv_count`,sum(if(`速率`='50M' and `是否IPTV用户`,1,0)) as `_50m_iptv_count` from middle_pon_aaa_divide${currentDate} as a group by a.`olt名称`,a.`PON板号`,a.`PON口号`)as b on c.olt名称=b.olt名称 and c.PON板号=b.PON板号 and c.PON口号=b.PON口号 set
+--     c.user=b.user , c._usernum_top10=b.usernum_top10, c._1000m_count=b._1000m_count,c._500m_count=b._500m_count,c._300m_count=b._300m_count,c._200m_count=b._200m_count,c._100m_count=b._100m_count,c._50m_count=b._50m_count,c._1000m_iptv_count=b._1000m_iptv_count,c._500m_iptv_count=b._500m_iptv_count,c._300m_iptv_count=b._300m_iptv_count,c._200m_iptv_count=b._200m_iptv_count,c._100m_iptv_count=b._100m_iptv_count,c._50m_iptv_count=b._50m_iptv_count where 1=1
+       update middle_pon_aaa_user${currentDate} as c left join (select a.`olt名称`,a.`PON板号`,a.`PON口号`,count(*) as user,sum(if(`是否为top10`='是',1,0)) as `usernum_top10`, sum(if(`速率`='1000M',1,0)) as `_1000m_count` ,sum(if(`速率`='500M',1,0)) as `_500m_count` , sum(if(`速率`='300M',1,0)) as `_300m_count`, sum(if(`速率`='200M',1,0)) as `_200m_count` , sum(if(`速率`='100M',1,0)) as `_100m_count`, sum(if(`速率`='50M',1,0)) as `_50m_count`,sum(if(`大工商类型`='公众客户',1,0)) as `公众客户`, sum(if(`大工商类型`='商务客户',1,0)) as `商务客户`, sum(if(`大工商类型`='大客户',1,0)) as `大客户` from middle_pon_aaa_divide${currentDate} as a group by a.`olt名称`,a.`PON板号`,a.`PON口号`)as b on c.olt名称=b.olt名称 and c.PON板号=b.PON板号 and c.PON口号=b.PON口号 set c.user=b.user , c._usernum_top10=b.usernum_top10, c._1000m_count=b._1000m_count,c._500m_count=b._500m_count,c._300m_count=b._300m_count,c._200m_count=b._200m_count,c._100m_count=b._100m_count,c._50m_count=b._50m_count, c.`公众客户`=b.`公众客户`, c.`商务客户`=b.`商务客户`, c.`大客户`=b.`大客户` where 1=1;
+       update middle_pon_aaa_user${currentDate} as c left join (select a.`olt名称`,a.`PON板号`,a.`PON口号`,sum(if(`速率`='1000M' and `是否IPTV用户`='是',1,0)) as `_1000m_iptv_count`,sum(if(`速率`='500M' and `是否IPTV用户`='是',1,0)) as `_500m_iptv_count`,sum(if(`速率`='300M' and `是否IPTV用户`='是',1,0)) as `_300m_iptv_count`,sum(if(`速率`='200M' and `是否IPTV用户`='是',1,0)) as `_200m_iptv_count`,sum(if(`速率`='100M' and `是否IPTV用户`='是',1,0)) as `_100m_iptv_count`,sum(if(`速率`='50M' and `是否IPTV用户`='是',1,0)) as `_50m_iptv_count` from middle_pon_aaa_divide${currentDate} as a group by a.`olt名称`,a.`PON板号`,a.`PON口号`)as b on c.olt名称=b.olt名称 and c.PON板号=b.PON板号 and c.PON口号=b.PON口号 set c._1000m_iptv_count=b._1000m_iptv_count,c._500m_iptv_count=b._500m_iptv_count,c._300m_iptv_count=b._300m_iptv_count,c._200m_iptv_count=b._200m_iptv_count,c._100m_iptv_count=b._100m_iptv_count,c._50m_iptv_count=b._50m_iptv_count where 1=1;
+    </update>
+
+
+    <update id="creatFactor" parameterType="string">
+    create table pon_mark_factor${currentDate}
+    (
+    id               int auto_increment primary key,
+    meal_weight      varchar(255) charset utf8 null,
+    flow_weight      varchar(255) charset utf8 null,
+    count_weight     varchar(255) charset utf8 null,
+    upgrade_strategy varchar(255) charset utf8 null,
+    future_field     varchar(255) charset utf8 null
+    );
+        
+    </update>
+
+    <update id="creatParms">
+    create table pon_mark_parms${currentDate}
+    (
+    olt_name           varchar(255) charset utf8 not null,
+    pon_port           varchar(255) charset utf8 not null,
+    station            varchar(255) charset utf8 null,
+    bandwidth          varchar(255) charset utf8 null,
+    model              varchar(255) charset utf8 null,
+    vendor             varchar(255) charset utf8 null,
+    up_avg             varchar(255) charset utf8 null,
+    up_peak            varchar(255) charset utf8 null,
+    down_avg           varchar(255) charset utf8 null,
+    down_peak          varchar(255) charset utf8 null,
+    department         varchar(255) charset utf8 null,
+    usernum_over_500m  varchar(255) charset utf8 null,
+    usernum_over_1000m varchar(255) charset utf8 null,
+    usernum_top10      varchar(255) charset utf8 null,
+    usernum_total      varchar(255) charset utf8 null,
+    priority           varchar(255) charset utf8 null,
+    score              varchar(255)              null,
+    date               datetime                  null,
+    operator           varchar(255) charset utf8 null,
+    constraint unique_fields
+        unique (olt_name, pon_port)
+    );
+
+    </update>
+
+    <update id="creatResult">
+    create table pon_mark_result${currentDate}
+    (
+    olt_name           varchar(255) charset utf8 not null,
+    station            varchar(255) charset utf8 null,
+    pon_port           varchar(255) charset utf8 not null,
+    bandwidth          varchar(255) charset utf8 null,
+    model              varchar(255) charset utf8 null,
+    vendor             varchar(255) charset utf8 null,
+    up_avg             varchar(255) charset utf8 null,
+    up_peak            varchar(255) charset utf8 null,
+    down_avg           varchar(255) charset utf8 null,
+    down_peak          varchar(255) charset utf8 null,
+    department         varchar(255) charset utf8 null,
+    usernum_over_500m  varchar(255) charset utf8 null,
+    usernum_over_1000m varchar(255) charset utf8 null,
+    usernum_top10      varchar(255) charset utf8 null,
+    usernum_total      varchar(255) charset utf8 null,
+    priority           varchar(255) charset utf8 null,
+    score              decimal (10,2)              null,
+    operate_time       varchar(255) charset utf8 null,
+    operator           varchar(255) charset utf8 null
+    );
+    </update>
+
+    <update id="updateParms" parameterType="string">
+        update pon_mark_parms${currentDate} set `priority`=if(`usernum_over_1000m`>0,1,0) where 1=1;
+        update pon_mark_parms${currentDate} set `priority`=if(`usernum_over_500m`>0 and `usernum_top10`>0 and `priority`=0,2,`priority`) where 1=1;
+        update pon_mark_parms${currentDate} set `priority`=if(`usernum_top10`>0 and `priority`=0,1,`priority`) where 1=1;
+        update pon_mark_parms${currentDate} set `priority`=if(`usernum_over_500m`>0 and `priority`=0,1,`priority`) where 1=1;
+    </update>
+
+    <delete id="deleteTable">
+       delete from ${tableName} where 1=1
+    </delete>
+
+
+    <update id="createOLTMassage">
+       create table middle_OLTMassage${currentDate}
+   (
+    `分公司`     varchar(255) null,
+    `olt名称`   varchar(255) null,
+    `ip`      varchar(255) null,
+    `厂家`      varchar(255) null,
+    `设备类型`    varchar(255) null,
+    `已用PON板槽位数` int(11) null,
+    `已用PON口数量` int(11) null,
+    `总计PON口数量` int(11) null,
+    `上联口带宽和` int(11) null,
+    `上联板数量` int(11) null,
+    `上联流出流量峰值` decimal(10,2) null,
+    `上联流出利用率` decimal(10,2) null,
+    `上联流入流量峰值` decimal(10,2) null,
+    `上联流入利用率` decimal(10,2) null,
+    `用户总数` int(11) null
+     );
+    </update>
+
+    <update id="createPONMassage">
+       create table middle_PONMassage${currentDate}
+   (
+    `所属OLT名称`      varchar(255) null,
+    `PON板编号`     varchar(255) null,
+    `PON板速率`    int(11) null,
+    `可用PON口数量` int(11) null,
+    `已用PON口数量`  int(11) null
+     );
+    </update>
+
+    <update id="updatePONMassage">
+         update middle_PONMassage${currentDate} as a left join base_pon_traffic${currentDate} as b on a.`所属OLT名称`=b.`olt名称` and a.`PON板编号` = b.`PON板号` set a.`PON板速率` = b.`带宽`
+    </update>
+
+    <insert id="insertPONMassage">
+         insert into middle_PONMassage${currentDate} (`所属OLT名称`,  `PON板编号`, `可用PON口数量`,`已用PON口数量`) select `olt名称` , `PON板号`,  if(max(`PON口号`)>8,16,8) as total , count(distinct `PON口号`) as used from middle_pon_aaa_divide${currentDate} where 1=1 group by `olt名称` , `PON板号`
+    </insert>
+
+
+    <insert id="insertOLTMassage" parameterType="string">
+        insert into  middle_OLTMassage${currentDate} (`分公司`,`olt名称`,`ip`,`厂家` ,`设备类型`,`已用PON板槽位数`,`已用PON口数量`,`总计PON口数量` ) select `分公司`,`olt名称`,`ip`,`厂家` ,`设备类型`, count(distinct `PON板号`) as usedBoard ,count(distinct `PON板号`,`PON口号`) as usedPort, if(max(`PON口号`)>8,16,8)*8 as total  from base_pon_traffic${currentDate} group by `分公司`,`olt名称`,`ip`,`厂家` ,`设备类型`
+    </insert>
+
+    <update id="updateOLTMassage" parameterType="string">
+        update middle_OLTMassage${currentDate} as a left join (select `olt名称`,sum(`带宽`) as bandwidth, count(distinct `上联板号`) as board, avg(`流出峰值`) as outPeak, avg(`流出峰值利用率`) as outRatio , avg(`流入峰值`) as inPeak, avg(`流入峰值利用率`) as inRatio from base_uplink_traffic${currentDate} group by `olt名称`) as b on a.`olt名称` = b.`olt名称` set a.`上联口带宽和` = b.bandwidth ,a.`上联板数量`=b.board,a.`上联流出流量峰值`=b.outPeak,a.`上联流出利用率`=b.outRatio,a.`上联流入流量峰值`=b.inPeak,a.`上联流入利用率`=b.inRatio where 1=1;
+--         update middle_OLTMassage${currentDate} as a left join (select `olt名称`,sum(`带宽`) as bandwidth, count(distinct `上联板号`) as board, avg(`流出峰值`) as outPeak, avg(`流出峰值利用率`) as outRatio , avg(`流入峰值`) as inPeak, avg(`流入峰值利用率`) as inRatio from base_uplink_traffic${currentDate} group by `ip`) as b on a.`ip` = b.`ip` set a.`上联口带宽和` = b.bandwidth ,a.`上联板数量`=b.board,a.`上联流出流量峰值`=b.outPeak,a.`上联流出利用率`=b.outRatio,a.`上联流入流量峰值`=b.inPeak,a.`上联流入利用率`=b.inRatio where 1=1;
+    </update>
+
+    <update id="updateOLTUser" parameterType="string">
+        update middle_OLTMassage${currentDate} as a left join (select `OLT`, count(*) as num from base_line${currentDate} group by `OLT`)  as b on a.`olt名称`=b.`OLT` set a.`用户总数`=b.num where 1=1;
+    </update>
+
+    <update id="createUserMassage" parameterType="string">
+    create table middle_UserMassage${currentDate}
+    (
+    `用户ID` varchar(255) null,
+    `上行流量` decimal(10,2) null,
+    `下行流量` decimal(10,2) null,
+    `在线时长` int(11) null,
+    `套餐速率`   varchar(255) null,
+    `上下线次数`   int(11) null,
+    `分公司`   varchar(255) null,
+    `olt名称`   varchar(255) null,
+    `ONU设备型号`   varchar(255) null
+   );
+    </update>
+
+    <insert id="insertUserMassage" parameterType="string">
+--         insert into middle_UserMassage${currentDate} (`日期`,  `用户ID`, `上行流量`,`下行流量`,`在线时长`, `上下线次数` ) select  `日期`,  `用户ID`, sum(`上行流量`),sum(`下行流量`),sum(`在线时长`),count(*) from base_aaa${currentDate} group by `日期`,`用户ID`
+        insert into middle_UserMassage${currentDate} ( `用户ID`, `上行流量`,`下行流量`,`在线时长`, `上下线次数` ) select  `用户ID`, sum(`上行流量`),sum(`下行流量`),sum(`在线时长`),count(*) from base_aaa${currentDate} group by `用户ID`
+    </insert>
+
+    <update id="updateUserMassage" parameterType="string">
+        update middle_UserMassage${currentDate}  as a  left join base_user_divide${currentDate} as b  on  a.`用户ID` = b.`设备号码` left join base_line${currentDate} as c on  a.`用户ID` = c.`CODE_NAME` set a.`套餐速率`=b.`速率`, a.`ONU设备型号`=b.`ONU设备型号`, a.`分公司` = c.`分公司` ,a.`olt名称` = c.`OLT`where 1=1;
+    </update>
+
+</mapper>

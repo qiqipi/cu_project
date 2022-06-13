@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liantong.demo_part2.Mapper.PONResourceMapper">
+
+
+    <!--    <select id="PON_board_rate" resultType="java.util.HashMap" parameterType="String">-->
+    <!--        <choose>-->
+    <!--            <when test="department != null and olt != null">-->
+    <!--                select a.*,convert(a.bordnum/a.totalnum,decimal(15,4) ) as rate from (select `分公司` as department-->
+    <!--                ,`olt名称` as olt,-->
+    <!--                count(`PON板号`) as bordnum,`设备类型` as device,if(`设备类型` like '%C300%' or `设备类型` LIKE '%MA5680T%' or `设备类型`-->
+    <!--                LIKE-->
+    <!--                '%AN5516-01%',16,if(`设备类型` like '%MA5800-X17%' ,17, 10)) as totalnum-->
+    <!--                from base_pon_traffic${timeFlag} where `分公司`=#{department} and `olt名称` = #{olt} GROUP BY-->
+    <!--                `分公司`,`olt名称`,`设备类型` )-->
+    <!--                as a-->
+    <!--            </when>-->
+    <!--            <when test="department != null and olt == null">-->
+    <!--                select a.*,convert(a.bordnum/a.totalnum,decimal(15,4) ) as rate from (select `分公司` as department ,-->
+    <!--                count(`PON板号`) as bordnum,`设备类型` as device,if(`设备类型` like '%C300%' or `设备类型` LIKE '%MA5680T%' or `设备类型`-->
+    <!--                LIKE-->
+    <!--                '%AN5516-01%',16,if(`设备类型` like '%MA5800-X17%' ,17, 10)) as totalnum-->
+    <!--                from base_pon_traffic${timeFlag} where `分公司`=#{department} GROUP BY `分公司`,`设备类型` )-->
+    <!--                as a-->
+    <!--            </when>-->
+    <!--            <when test="department == null and olt == null">-->
+    <!--                select a.*,convert(a.bordnum/a.totalnum,decimal(15,4) ) as rate from (select count(*) as bordnum ,sum(if(`设备类型` like '%C300%' or `设备类型` LIKE '%MA5680T%' or `设备类型` like '%AN5516-01%',16,if(`设备类型` like '%MA5800-X17%' ,17, 10))) as totalnum from (select-->
+    <!--                distinct `olt名称`,`设备类型` from base_pon_traffic${timeFlag} )as b) as a-->
+    <!--            </when>-->
+    <!--        </choose>-->
+    <!--    </select>-->
+
+    <select id="returnBoardNum" resultType="java.lang.Integer">
+        <choose>
+            <when test="department != null and olt != null">
+                select count(distinct `olt名称` ,`PON板号`) as bordnum from base_pon_traffic${timeFlag} where
+                `分公司`=#{department} and `olt名称`=#{olt}
+            </when>
+            <when test="department != null and olt == null">
+                select count(distinct `olt名称` ,`PON板号`) as bordnum from base_pon_traffic${timeFlag} where
+                `分公司`=#{department}
+            </when>
+            <when test="department == null and olt == null">
+                select count(distinct `olt名称` ,`PON板号`) as bordnum from base_pon_traffic${timeFlag}
+            </when>
+        </choose>
+    </select>
+
+    <select id="returnTotalNum" resultType="java.lang.Integer">
+        <choose>
+            <when test="department != null and olt != null">
+                select sum(if(`设备类型` like '%C300%' or `设备类型` LIKE '%MA5680T%' or `设备类型` like '%AN5516-01%',16,if(`设备类型`
+                like '%MA5800-X17%' ,17, 10))) as totalnum from (select distinct `olt名称`,`设备类型` from
+                base_pon_traffic${timeFlag} where `分公司`=#{department} and `olt名称`=#{olt}) as b
+            </when>
+            <when test="department != null and olt == null">
+                select sum(if(`设备类型` like '%C300%' or `设备类型` LIKE '%MA5680T%' or `设备类型` like '%AN5516-01%',16,if(`设备类型`
+                like '%MA5800-X17%' ,17, 10))) as totalnum from (select distinct `olt名称`,`设备类型` from
+                base_pon_traffic${timeFlag} where `分公司`=#{department})as b
+            </when>
+            <when test="department == null and olt == null">
+                select sum(if(`设备类型` like '%C300%' or `设备类型` LIKE '%MA5680T%' or `设备类型` like '%AN5516-01%',16,if(`设备类型`
+                like '%MA5800-X17%' ,17, 10))) as totalnum from (select distinct `olt名称`,`设备类型` from
+                base_pon_traffic${timeFlag} )as b
+            </when>
+        </choose>
+    </select>
+
+
+    <select id="PON_port_rate" resultType="java.util.HashMap" parameterType="String">
+        <choose>
+            <when test="department != null and olt != null">
+                select a.department,a.olt, convert(a.port_num/a.total_num,decimal(15,4) ) as rate from
+                (select `分公司` as department,`olt名称` as olt,sum(`PON口号`) as port_num ,sum(if(`PON口号`>8,16,8)) as
+                total_num from
+                base_pon_traffic${timeFlag}
+                where `分公司`=#{department} and `olt名称`=#{olt} GROUP BY `分公司`,`olt名称`) as a
+            </when>
+            <when test="department != null and olt == null">
+                select a.department, convert(a.port_num/a.total_num,decimal(15,4) ) as rate from
+                (select `分公司` as department,sum(`PON口号`) as port_num ,sum(if(`PON口号`>8,16,8)) as total_num from
+                base_pon_traffic${timeFlag}
+                where `分公司`=#{department} GROUP BY `分公司`) as a
+            </when>
+            <otherwise>
+                select convert(a.port_num/a.total_num,decimal(15,4) ) as rate from
+                (select count(distinct `PON板号`,`PON口号`,`olt名称`) as port_num , (count(distinct `PON板号`,`olt名称`))*8 as
+                total_num from base_pon_traffic${timeFlag}) as a
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="PON_Port_Used" resultType="java.util.HashMap" parameterType="String">
+        <choose>
+            <when test="department != null and station!= null and olt != null">
+                select `olt名称` as dep, sum(a.port_num) as usedPort, sum(a.total_num) as totalPort from
+                (select `olt名称`,count(`PON口号`) as port_num ,if(max(`PON口号`)>8,16,8) as total_num from
+                base_pon_traffic${timeFlag} where `分公司` = #{department} and substring_index(`olt名称`,'_',1) = #{station}
+                and `olt名称` = #{olt} group by `PON板号`) as a group by `olt名称`
+            </when>
+            <when test="department != null and station!= null">
+                select `olt名称` as dep, sum(a.port_num) as usedPort, sum(a.total_num) as totalPort from
+                (select `olt名称`, count(`PON口号`) as port_num ,if(max(`PON口号`)>8,16,8) as total_num from
+                base_pon_traffic${timeFlag} where `分公司` = #{department} and substring_index(`olt名称`,'_',1) = #{station}
+                group by `PON板号`,`olt名称`) as a group by `olt名称`
+            </when>
+            <when test="department != null">
+                select station as dep, sum(a.port_num) as usedPort, sum(a.total_num) as totalPort from
+                (select substring_index(`olt名称`,'_',1) as station, count(`PON口号`) as port_num ,if(max(`PON口号`)>8,16,8)
+                as total_num from
+                base_pon_traffic${timeFlag} where `分公司`=#{department} GROUP BY
+                `olt名称`,`PON板号`,substring_index(`olt名称`,'_',1)) as a group by station
+            </when>
+            <otherwise>
+                select `分公司` as dep , sum(a.port_num) as usedPort, sum(a.total_num) as totalPort from
+                (select `分公司`, count(`PON口号`) as port_num ,if(max(`PON口号`)>8,16,8) as total_num from
+                base_pon_traffic${timeFlag} GROUP BY `olt名称`,`PON板号`,`分公司`) as a group by `分公司`
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="returnDepartment" resultType="String" parameterType="String">
+             select distinct `分公司` from base_pon_traffic${timeFlag}
+    </select>
+
+    <select id="returnOLT" resultType="String" parameterType="String">
+             select distinct `olt名称` from base_pon_traffic${timeFlag} where `分公司`=#{department}
+    </select>
+
+    <!--    <select id="OLTTree" resultType="java.util.HashMap" parameterType="String">-->
+    <!--             SELECT `设备名称`, count(distinct `olt_pon_name`) as number FROM `pon20180930` where `分公司`=#{departmrnt} GROUP BY `设备名称`-->
+    <!--    </select>-->
+
+    <!--    <select id="PONBoardTree" resultType="java.util.HashMap" parameterType="String">-->
+    <!--            select a.* , b.* from (SELECT count(distinct `olt_pon_name`, `pon_board_number`) as 1G from  `pon20180930` where `分公司`=#{department} and `设备名称`=#{OLTName} and `带宽` in ('1G','1.25G') ) as a,-->
+    <!--                      (SELECT count(distinct `olt_pon_name`, `pon_board_number`) as 10G from  `pon20180930` where `分公司`=#{department} and `设备名称`=#{OLTName} and `带宽`='10G' ) as b-->
+    <!--    </select>-->
+
+    <!--    <select id="totalTree" resultType="java.util.HashMap" parameterType="String">-->
+    <!--            select a.* , b.* from (SELECT count(`pon_port_number`) as 1GPONPort , sum(`total_user_count`) as 1GTotalUser from `pon20180930` where `分公司`=#{department} and `设备名称`=#{OLTName} and `带宽` in ('1G','1.25G') )  as a,-->
+    <!--                      (SELECT count(`pon_port_number`) as 10GPONPort , sum(`total_user_count`) as 10GTotalUser from  `pon20180930` where `分公司`=#{department} and `设备名称`=#{OLTName} and `带宽`='10G' ) as b-->
+    <!--    </select>-->
+
+    <select id="OLTTree" resultType="java.util.HashMap" parameterType="String">
+             SELECT `设备类型`, count(distinct `olt名称`) as number FROM middle_pon_aaa_user${timeFlag} where `分公司` = #{department} GROUP BY `设备类型`
+    </select>
+
+    <select id="PONBoardTree" resultType="java.util.HashMap" parameterType="String">
+            select a.* , b.* from (SELECT count(distinct `olt名称`, `PON板号`) as 1G from  middle_pon_aaa_user${timeFlag} where  `分公司` = #{department} and `设备类型`=#{OLTName} and `带宽` in ('1G','1.25G') ) as a,
+                      (SELECT count(distinct `olt名称`, `PON板号`) as 10G from  middle_pon_aaa_user${timeFlag} where `分公司` = #{department} and `设备类型`=#{OLTName} and `带宽`='10G' ) as b
+    </select>
+
+    <select id="totalTree" resultType="java.util.HashMap" parameterType="String">
+            select a.* , b.* from (SELECT count(`PON口号`) as 1GPONPort , sum(`user`) as 1GTotalUser from middle_pon_aaa_user${timeFlag} where   `分公司` =#{department} and `设备类型`=#{OLTName} and `带宽` in ('1G','1.25G') )  as a,
+                      (SELECT count(`PON口号`) as 10GPONPort , sum(`user`) as 10GTotalUser from  middle_pon_aaa_user${timeFlag} where  `分公司`=#{department} and `设备类型`=#{OLTName} and `带宽`='10G' ) as b
+    </select>
+
+    <select id="returnTimeByTable" resultType="java.util.HashMap" parameterType="String">
+        select * from  ${time}
+    </select>
+
+    <select id="returnTimeByFiled1" resultType="java.util.HashMap" parameterType="String">
+           select * from  Timestamp20190708 where stamp=#{time}
+    </select>
+
+    <select id="returnTimeByFiled2" resultType="java.util.HashMap" parameterType="String">
+           select * from  Timestamp20200708 where stamp=#{time}
+    </select>
+
+    <select id="returnMap" resultType="java.util.HashMap">
+           select pon_port, count(*) as user_number, lon as lng, lat, olt from  beijing_map group by pon_port, olt, lat, lon
+    </select>
+    <select id="returnTianjin" resultType="java.util.HashMap">
+           select name, count(*) as user_number, lng, lat from  tianjin_hepin_map group by name, lat, lng
+    </select>
+    <select id="returnNewTianjin" resultType="java.util.HashMap">
+           select name, lng, lat from  new_tianjin_hepin_map group by name, lat, lng
+    </select>
+    <select id="returnOldTianjinNumber" resultType="java.util.HashMap">
+           select  count(*) as old_user_number from  tianjin_hepin_map
+    </select>
+    <select id="returnNewTianjinNumber" resultType="java.util.HashMap">
+           select  count(*) as new_user_number from  new_tianjin_hepin_map
+    </select>
+
+    <select id="mapOLT" resultType="String">
+           select distinct(olt) from  beijing_map
+    </select>
+
+    <select id="returnVender" parameterType="string" resultType="java.lang.String">
+        select distinct(`厂家`) from base_pon_traffic${timeFlag} where 1=1
+        <if test="department != null">
+            and `分公司` = #{department}
+        </if>
+        <if test="station != null">
+            and substring_index(`olt名称`,'_',1) = #{station}
+        </if>
+    </select>
+
+    <select id="returnTypes" parameterType="string" resultType="java.lang.String">
+        select distinct(`大工商类型`) from middle_pon_aaa_divide${timeFlag} where 1=1
+        <if test="department != null">
+            and `分公司` = #{department}
+        </if>
+        <if test="station != null">
+            and substring_index(`olt名称`,'_',1) = #{station}
+        </if>
+    </select>
+
+    <select id="returnVenderMassage" parameterType="string" resultType="java.util.HashMap">
+        <choose>
+            <when test="department != null and station != null">
+                select count(case when `厂家`=#{vender} then 1 else null end) as num, substring_index(`olt名称`,'_',1) as
+                station from base_pon_traffic${timeFlag} where `分公司`=#{department} and substring_index(`olt名称`,'_',1) =
+                #{station} group by substring_index(`olt名称`,'_',1)
+            </when>
+            <when test="department != null">
+                select count(case when `厂家`=#{vender} then 1 else null end) as num, substring_index(`olt名称`,'_',1) as
+                station from base_pon_traffic${timeFlag} where `分公司`=#{department} group by
+                substring_index(`olt名称`,'_',1)
+            </when>
+            <otherwise>
+                select count(case when `厂家`=#{vender} then 1 else null end) as num, `分公司` as station from
+                base_pon_traffic${timeFlag} group by `分公司`
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="returnIPTVMassage" resultType="java.util.LinkedHashMap">
+        <choose>
+            <when test="department != null and station != null and olt != null">
+                select count(case when `是否IPTV用户`=#{type} then 1 else null end) as num, `olt名称` as
+                station from middle_pon_aaa_divide${timeFlag} where `分公司` = #{department} and substring_index(`olt名称`,'_',1) =
+                #{station} and `olt名称` = #{olt}
+            </when>
+            <when test="department != null and station != null">
+                select count(case when `是否IPTV用户`=#{type} then 1 else null end) as num, `olt名称` as
+                station from middle_pon_aaa_divide${timeFlag} where `分公司`=#{department} and substring_index(`olt名称`,'_',1) =
+                #{station} group by `olt名称`
+            </when>
+            <when test="department != null">
+                select count(case when `是否IPTV用户`=#{type} then 1 else null end) as num, substring_index(`olt名称`,'_',1) as
+                station from middle_pon_aaa_divide${timeFlag} where `分公司`=#{department} group by
+                substring_index(`olt名称`,'_',1)
+            </when>
+            <otherwise>
+                select count(case when `是否IPTV用户`=#{type} then 1 else null end) as num, `分公司` as station from
+                middle_pon_aaa_divide${timeFlag} group by `分公司`
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="userType" parameterType="string" resultType="java.util.LinkedHashMap">
+        <choose>
+            <when test="department != null and station != null">
+                select count(case when `大工商类型`=#{type} then 1 else null end) as num, substring_index(`olt名称`,'_',1) as
+                station from middle_pon_aaa_divide${timeFlag} where `分公司`=#{department} and substring_index(`olt名称`,'_',1) =
+                #{station} group by substring_index(`olt名称`,'_',1)
+            </when>
+            <when test="department != null">
+                select count(case when `大工商类型`=#{type} then 1 else null end) as num, substring_index(`olt名称`,'_',1) as
+                station from middle_pon_aaa_divide${timeFlag} where `分公司`=#{department} group by
+                substring_index(`olt名称`,'_',1)
+            </when>
+            <otherwise>
+                select count(case when `大工商类型`=#{type} then 1 else null end) as num, `分公司` as station from
+                middle_pon_aaa_divide${timeFlag} group by `分公司`
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="returnModel" parameterType="string" resultType="java.lang.String">
+        select distinct(`设备类型`) from base_pon_traffic${timeFlag} where 1=1
+        <if test="department != null">
+            and `分公司` = #{department}
+        </if>
+        <if test="station != null">
+            and substring_index(`olt名称`,'_',1) = #{station}
+        </if>
+    </select>
+
+    <select id="returnModelMassage" parameterType="string" resultType="java.util.HashMap">
+        <choose>
+            <when test="department != null and station != null">
+                select count(case when `设备类型`=#{model} then 1 else null end) as num, substring_index(`olt名称`,'_',1) as
+                station from base_pon_traffic${timeFlag} where `分公司`=#{department} and substring_index(`olt名称`,'_',1) =
+                #{station} group by substring_index(`olt名称`,'_',1)
+            </when>
+            <when test="department != null">
+                select count(case when `设备类型`=#{model} then 1 else null end) as num, substring_index(`olt名称`,'_',1) as
+                station from base_pon_traffic${timeFlag} where `分公司`=#{department} group by
+                substring_index(`olt名称`,'_',1)
+            </when>
+            <otherwise>
+                select count(case when `设备类型`=#{model} then 1 else null end) as num, `分公司` as station from
+                base_pon_traffic${timeFlag} group by `分公司`
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="countUser" resultType="int" parameterType="string">
+        select count(*) from middle_UserMassage${timeFlag} where 1=1
+<!--                <if test="department != null">-->
+        <!--            and `分公司` = #{department}-->
+        <!--        </if>-->
+    </select>
+
+    <select id="returnUserMassage" resultType="java.util.Map">
+        <choose>
+            <when test="department !=null">
+                select count(*) as num, a.`分公司` as department from (select `下行流量`, `分公司` from
+                middle_UserMassage${timeFlag} where `分公司` =#{department} order
+                by `下行流量` desc limit ${count} ) as a where `分公司` =#{department}
+            </when>
+            <otherwise>
+                select count(*) as num, a.`分公司` as department from (select `下行流量`, `分公司` from
+                middle_UserMassage${timeFlag} order
+                by `下行流量` desc limit ${count} ) as a group by a.`分公司`
+            </otherwise>
+        </choose>
+
+    </select>
+
+<!--    <select id="returnUserMassage1" resultType="java.util.Map">-->
+<!--        <choose>-->
+<!--            <when test="department !=null">-->
+<!--                select count(*) as num, a.`分公司` as department from select `下行流量`,`用户ID` from (select sum(`下行流量`) as `下行流量`, `用户ID` from-->
+<!--                base_aaa${timeFlag} where 1=1 group by `用户ID`) as a order-->
+<!--                by `下行流量` desc limit ${count} ) as b , base_line${timeFlag} where `分公司` =#{department}-->
+<!--            </when>-->
+<!--            <otherwise>-->
+<!--                select count(*) as num, a.`分公司` as department from (select `下行流量`, `分公司` from-->
+<!--                middle_pon_aaa_divide${timeFlag} order-->
+<!--                by `下行流量` desc limit ${count} ) as a group by a.`分公司`-->
+<!--            </otherwise>-->
+<!--        </choose>-->
+
+<!--    </select>-->
+
+    <select id="returnUser"  resultType="java.util.LinkedHashMap">
+        select `用户ID` as id, `分公司` as department_name, `olt名称` as olt_name, `ONU设备型号` as onu,`套餐速率` as speed, `上行流量` as upstream,`下行流量` as downstream,`在线时长` as online_time from middle_UserMassage${timeFlag} where 1=1 order by ${mode} desc limit ${count}
+    </select>
+
+    <select id="homeMassage" resultType="java.util.HashMap" parameterType="string">
+        select `分公司` as a , count(distinct `olt名称`) as b, count(distinct `ONU设备型号`) as c, count(distinct `olt名称`,`PON板号`,`PON口号`) as d,count(*) as e from middle_pon_aaa_divide${timeFlag} group by `分公司`
+    </select>
+
+    <select id="pon_type" resultType="java.util.HashMap" parameterType="string">
+        <choose>
+            <when test="department!=null and station !=null">
+                SELECT substring_index(`olt名称`,'_', 1) as `dep`,
+                sum((if(`带宽` IN (1000, 1250, 2500, NULL), 1, 0))) AS `1GE_count`,
+                sum(if(`带宽` = 10000, 1, 0)) AS `10GE_count`
+                FROM base_pon_traffic${timeFlag}
+                where `分公司` = #{department} and substring_index(`olt名称`,'_', 1) = #{station}
+            </when>
+            <when test="department != null">
+                SELECT substring_index(`olt名称`,'_', 1) as `dep`,
+                sum((if(`带宽` IN (1000, 1250, 2500, NULL), 1, 0))) AS `1GE_count`,
+                sum(if(`带宽` = 10000, 1, 0)) AS `10GE_count`
+                FROM base_pon_traffic${timeFlag}
+                where `分公司` = #{department} group by substring_index(`olt名称`,'_', 1)
+            </when>
+            <otherwise>
+                SELECT `分公司` as dep,
+                sum((if(`带宽` IN (1000, 1250, 2500, NULL), 1, 0))) AS `1GE_count`,
+                sum(if(`带宽` = 10000, 1, 0)) AS `10GE_count`
+                FROM base_pon_traffic${timeFlag} group by `分公司`
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="countTraffic" resultType="java.lang.Double" parameterType="string">
+         select sum(`user_count`)  from temp where speed = #{speed} group by `date`
+    </select>
+
+    <select id="countAvg" resultType="java.lang.Double" parameterType="string">
+         select sum(downstream_avg * `user_count` ) from temp where speed= #{speed} group by `date`
+    </select>
+
+    <select id="countPeak" resultType="java.lang.Double" parameterType="string">
+        select sum(downstream_peak * `user_count` ) from temp where speed= #{speed} group by `date`
+    </select>
+
+    <select id="countDate" resultType="java.lang.String" parameterType="string">
+        select `date` from temp where speed = #{speed} group by `date`
+    </select>
+
+    <select id="downloadTable" resultType="java.util.LinkedHashMap" parameterType="string">
+        select * from ${name}_${suffix} where 1=1
+    </select>
+
+    <select id="departmentMassage" resultType="java.lang.Object">
+        select distinct department_name from pon_traffic_time_line where 1=1
+    </select>
+
+    <select id="stationMassage" parameterType="string" resultType="java.lang.Object">
+        select distinct station from pon_traffic_time_line where department_name = #{department}
+    </select>
+
+
+    <insert id="returnRectification" parameterType="java.lang.String">
+        insert ignore into new_tianjin_hepin_map (name, lng, lat) values
+            ( #{name},#{lng},#{lat} )
+    </insert>
+
+    <delete id="truncateTable">
+        truncate table new_tianjin_hepin_map;
+    </delete>
+
+
+</mapper>

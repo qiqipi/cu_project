@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liantong.demo_part2.Mapper.UserMapper">
+    <select id="getUserByName" resultType="com.liantong.demo_part2.Entity.User">
+        select * from cu_user where login_name = #{login_name};
+    </select>
+    <select id="AllUser" resultType="com.liantong.demo_part2.Entity.User">
+        select * from cu_user;
+    </select>
+    <select id="getUserByUserId" resultType="com.liantong.demo_part2.Entity.User">
+        select * from cu_user where user_id = #{user_id};
+    </select>
+
+    <delete id="deleteUserByName" >
+        delete from cu_user where login_name = #{login_name}
+    </delete>
+
+    <insert id="addUser" parameterType="com.liantong.demo_part2.Entity.User" useGeneratedKeys="true" keyProperty="id">
+        insert into cu_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="user_id!=null">user_id,</if>
+            <if test="login_name!=null">login_name,</if>
+            <if test="password!=null">password,</if>
+            <if test="is_admin!=null">is_admin,</if>
+            <if test="level!=null">level</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="user_id!=null">#{user_id},</if>
+            <if test="login_name!=null">#{login_name},</if>
+            <if test="password!=null">#{password},</if>
+            <if test="is_admin!=null">#{is_admin},</if>
+            <if test="level!=null">#{level}</if>
+        </trim>
+    </insert>
+    <select id="getMaxId" resultType="java.lang.Integer">
+        select max(user_id) from cu_user
+    </select>
+    
+    <update id="AlterUserInfo" parameterType="com.liantong.demo_part2.Entity.User">
+        update cu_user set login_name = #{login_name},password = #{password} where user_id = #{user_id};
+    </update>
+    <select id="testReturnMap" resultType="java.util.HashMap">
+        select * from cu_user;
+    </select>
+    <select id="getModifyTime" resultType="java.lang.String">
+        select distinct `表名后缀` from log_information where `注释`=#{note};
+    </select>
+</mapper>
