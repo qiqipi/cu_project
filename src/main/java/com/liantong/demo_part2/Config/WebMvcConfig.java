@@ -60,6 +60,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport{
 		public CorsFilter corsFilter() {
 		    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		    source.registerCorsConfiguration("/**", corsConfig());
+			System.out.println("..");
 		    return new CorsFilter(source);
 		}
 
