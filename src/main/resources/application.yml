@@ -6,13 +6,14 @@ server:
       timeout: Pt10m
 
 spring:
-  # 39.99.215.48是阿里云服务器
+  # 10.103.238.145是云服务器
   datasource:
-#     url: jdbc:mysql://localhost:3306/new_test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&allowMultiQueries=true
-     url: jdbc:mysql://10.103.238.145:3306/new_test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&allowMultiQueries=true
-     driver-class-name: com.mysql.cj.jdbc.Driver
-     username: root
-     password: 123456
+    url: jdbc:mysql://localhost:3306/new_test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&allowMultiQueries=true
+#     url: jdbc:mysql://10.103.238.145:3306/new_test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&allowMultiQueries=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+#    password: 123456
 
   servlet:
      multipart:

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liantong.demo_part2.Mapper.PON2022MigrationMapper">
+
+    <select id="getAaaTable" resultType="hashmap">
+        select * from new_aaa_null;
+    </select>
+
+    <update id="dropMergeTable">
+        drop table if exists merge_table;
+    </update>
+
+    <update id="createMergeTable" parameterType="string">
+        CREATE TABLE merge_table(
+                                    id BIGINT(20) not null auto_increment,
+                                    OLT名称 VARCHAR(255) DEFAULT null,
+                                    分局 VARCHAR(255) DEFAULT null,
+                                    分公司 VARCHAR(255) DEFAULT null,
+                                    OLT管理IP VARCHAR(255) DEFAULT null,
+                                    设备类型 VARCHAR(255) DEFAULT null,
+                                    带宽 VARCHAR(255) DEFAULT null,
+                                    千兆流入峰值 VARCHAR(255) DEFAULT null,
+                                    千兆流入峰值利用率 VARCHAR(255) DEFAULT null,
+                                    千兆流入均值 VARCHAR(255) DEFAULT null,
+                                    千兆流入均值利用率 VARCHAR(255) DEFAULT null,
+                                    万兆流入峰值 VARCHAR(255) DEFAULT null,
+                                    万兆流入峰值利用率 VARCHAR(255) DEFAULT null,
+                                    万兆流入均值 VARCHAR(255) DEFAULT null,
+                                    万兆流入均值利用率 VARCHAR(255) DEFAULT null,
+                                    PON板号 VARCHAR(255) DEFAULT null,
+                                    PON口号 VARCHAR(255) DEFAULT null,
+                                    `上网账号` VARCHAR(255) DEFAULT null,
+                                    千兆流出峰值采集时间 date DEFAULT null,
+                                    万兆流出峰值采集时间 date DEFAULT null,
+                                    PRIMARY key (id)
+        );
+    </update>
+
+    <insert id="initMergeTable" parameterType="string">
+        INSERT into merge_table (OLT名称,分局,分公司,OLT管理IP,设备类型,带宽,千兆流入峰值,千兆流入峰值利用率,千兆流入均值,千兆流入均值利用率,万兆流入峰值,万兆流入峰值利用率,万兆流入均值,万兆流入均值利用率,PON板号,PON口号,上网账号,千兆流出峰值采集时间,万兆流出峰值采集时间)
+        SELECT `网元名称`,分局,分公司,OLT管理IP,设备类型,带宽,千兆流入峰值,千兆流入峰值利用率,千兆流入均值,千兆流入均值利用率,万兆流入峰值,万兆流入峰值利用率,万兆流入均值,万兆流入均值利用率,PON板号,PON口号,上网账号,千兆流出峰值采集时间,万兆流出峰值采集时间
+        FROM new_line_null a LEFT JOIN new_pon_traffic_null b on a.OLT端口号 = b.`PON口号` and a.`OLT槽位号` = b.`PON板号` and a.OLT = b.`网元名称`;
+    </insert>
+
+
+
+</mapper>
