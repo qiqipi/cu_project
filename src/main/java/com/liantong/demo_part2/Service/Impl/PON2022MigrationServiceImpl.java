@@ -20,8 +20,8 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
     PON2022MigrationMapper pon2022MigrationMapper;
 
     @Override
-    public List<Map<String, Object>> getAaaTable() {
-        List<Map<String, Object>> aaaTable = pon2022MigrationMapper.getAaaTable();
+    public List<Map<String, Object>> getOLTChosenTable() {
+        List<Map<String, Object>> aaaTable = pon2022MigrationMapper.getOLTChosenTable();
         return aaaTable;
     }
 
@@ -31,11 +31,25 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         pon2022MigrationMapper.dropMergeTable();
         pon2022MigrationMapper.createMergeTable();
         pon2022MigrationMapper.initMergeTable();
-        System.out.println("merge表格完成");
+
         try {
         }catch (Exception e){
             throw new Exception("生成merge表出错");
         }
+        System.out.println("merge表格完成");
+        return true;
+    }
+
+    @Override
+    public boolean createOLTChosenTable() throws Exception {
+
+        pon2022MigrationMapper.createOLTChosenTable();
+        pon2022MigrationMapper.insertOLTChosenTable();
+        try {
+        }catch (Exception e){
+            throw new Exception("生成OLTChosen表出错");
+        }
+        System.out.println("OLTChosen完成");
         return true;
     }
 

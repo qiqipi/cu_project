@@ -4,8 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liantong.demo_part2.Mapper.PON2022MigrationMapper">
 
-    <select id="getAaaTable" resultType="hashmap">
-        select * from new_aaa_null;
+    <select id="getOLTChosenTable" resultType="java.util.LinkedHashMap">
+        select * from OLT_chosen;
     </select>
 
     <update id="dropMergeTable">
@@ -45,5 +45,26 @@
     </insert>
 
 
+
+    <update id="createOLTChosenTable" parameterType="string">
+        drop table if exists OLT_chosen;
+        CREATE TABLE OLT_chosen(
+                                   id BIGINT(20) not null auto_increment,
+                                   OLT名称 VARCHAR(255) DEFAULT null,
+                                   OLT管理IP VARCHAR(255) DEFAULT null,
+                                   GPON口 VARCHAR(255) DEFAULT null,
+                                   EPON口 VARCHAR(255) DEFAULT null,
+                                   10GPON口 VARCHAR(255) DEFAULT null,
+                                   总和 VARCHAR(255) DEFAULT null,
+                                   PRIMARY KEY (id)
+        );
+    </update>
+
+    <insert id="insertOLTChosenTable" parameterType="string">
+        INSERT INTO OLT_chosen(OLT名称,`OLT管理IP`,GPON口,EPON口,10GPON口,总和)
+        SELECT `OLT名称`,`OLT管理IP`,SUM(IF(带宽='2500',1,0)) GPON口,SUM(IF(带宽='1000',1,0)) EPON口,SUM(IF(带宽='10000',1,0)) 10GPON口,count(*) 总和
+        FROM (SELECT DISTINCT OLT名称,`OLT管理IP`,`带宽`,`PON板号`,`PON口号` FROM merge_table) as a
+        GROUP BY a.`OLT名称`;
+    </insert>
 
 </mapper>

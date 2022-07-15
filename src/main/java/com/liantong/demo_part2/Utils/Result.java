@@ -47,6 +47,12 @@ public class Result<T> {
 		this.data=result;
 	}
 
+	public Result(Boolean success, T data, String msg, String code) {
+		this.success = success;
+		this.data = data;
+		this.msg = msg;
+		this.code = code;
+	}
 
 	public Boolean getSuccess() {
 		return success;

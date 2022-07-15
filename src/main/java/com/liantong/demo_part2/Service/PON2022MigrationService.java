@@ -9,9 +9,11 @@ import java.util.Map;
  */
 public interface PON2022MigrationService {
 
-    List<Map<String, Object>> getAaaTable();
+    List<Map<String, Object>> getOLTChosenTable();
 
 
     boolean createMergeTable() throws Exception;
+
+    boolean createOLTChosenTable() throws Exception;
 
 }

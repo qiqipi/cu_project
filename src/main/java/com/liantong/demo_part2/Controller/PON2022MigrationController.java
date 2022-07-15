@@ -30,17 +30,12 @@ public class PON2022MigrationController {
     @Autowired
     private PON2022MigrationService pon2022MigrationService;
 
-    @RequestMapping(value = "/aaa",method = RequestMethod.GET)
-    @ResponseBody
-    public List<Map<String, Object>> getAaaTable(){
-        List<Map<String, Object>> aaaTable = pon2022MigrationService.getAaaTable();
-        return aaaTable;
-    }
+
 
     @RequestMapping(value = "/merge",method = RequestMethod.GET)
     @ApiOperation(value = "创建中间操作表和规划表", response = Result.class)
     @ResponseBody
-    public void createTable(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void createMergeTable(HttpServletRequest request, HttpServletResponse response) throws Exception {
         boolean flag;
         try {
             flag = pon2022MigrationService.createMergeTable();
@@ -54,5 +49,33 @@ public class PON2022MigrationController {
             JsonResult.toJson(result, response);
         }
 
+    }
+
+
+    @RequestMapping(value = "/createOltChosen",method = RequestMethod.GET)
+    @ApiOperation(value = "创建OLTChosen(表一)", response = Result.class)
+    @ResponseBody
+    public void createOLTChosenTable(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        boolean flag;
+        try {
+            flag = pon2022MigrationService.createOLTChosenTable();
+            if(flag){
+                result.packetResult(true, "OLTChosen(表一)建立成功",flag,"204");
+                JsonResult.toJson(result, response);
+            }
+        }catch (Exception e){
+            System.out.println(e);
+            result.packetResult(false, "OLTChosen(表一)建立过程错误","20000");
+            JsonResult.toJson(result, response);
+        }
+    }
+
+    @RequestMapping(value = "/selectOltChosen",method = RequestMethod.GET)
+    @ApiOperation(value = "获取OLTChosen(表一)")
+    @ResponseBody
+    public Result getAaaTable(){
+        List<Map<String, Object>> OLTChosenTable = pon2022MigrationService.getOLTChosenTable();
+        Result<List<Map<String, Object>>> listResult = new Result(true,OLTChosenTable,"获取数据成功","200");
+        return listResult;
     }
 }

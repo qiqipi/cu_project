@@ -14,11 +14,15 @@ import java.util.Map;
 public interface PON2022MigrationMapper {
 
     @MapKey("id")
-    List<Map<String,Object>> getAaaTable();
+    List<Map<String,Object>> getOLTChosenTable();
 
     void dropMergeTable();
 
     void createMergeTable();
 
     int initMergeTable();
+
+    void createOLTChosenTable();
+
+    int insertOLTChosenTable();
 }
