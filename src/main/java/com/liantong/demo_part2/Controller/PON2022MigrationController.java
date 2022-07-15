@@ -52,28 +52,17 @@ public class PON2022MigrationController {
     }
 
 
-    @RequestMapping(value = "/createOltChosen",method = RequestMethod.GET)
-    @ApiOperation(value = "创建OLTChosen(表一)", response = Result.class)
-    @ResponseBody
-    public void createOLTChosenTable(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        boolean flag;
-        try {
-            flag = pon2022MigrationService.createOLTChosenTable();
-            if(flag){
-                result.packetResult(true, "OLTChosen(表一)建立成功",flag,"204");
-                JsonResult.toJson(result, response);
-            }
-        }catch (Exception e){
-            System.out.println(e);
-            result.packetResult(false, "OLTChosen(表一)建立过程错误","20000");
-            JsonResult.toJson(result, response);
-        }
-    }
-
     @RequestMapping(value = "/selectOltChosen",method = RequestMethod.GET)
     @ApiOperation(value = "获取OLTChosen(表一)")
     @ResponseBody
     public Result getAaaTable(){
+        boolean flag;
+        try {
+            flag = pon2022MigrationService.createOLTChosenTable();
+        }catch (Exception e){
+            System.out.println(e);
+            return new Result(false,null,"创建表格失败","400");
+        }
         List<Map<String, Object>> OLTChosenTable = pon2022MigrationService.getOLTChosenTable();
         Result<List<Map<String, Object>>> listResult = new Result(true,OLTChosenTable,"获取数据成功","200");
         return listResult;
