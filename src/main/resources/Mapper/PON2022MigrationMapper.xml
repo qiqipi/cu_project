@@ -61,6 +61,7 @@
     </update>
 
     <insert id="insertOLTChosenTable" parameterType="string">
+        set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
         INSERT INTO OLT_chosen(OLT名称,`OLT管理IP`,GPON口,EPON口,10GPON口,总和)
         SELECT `OLT名称`,`OLT管理IP`,SUM(IF(带宽='2500',1,0)) GPON口,SUM(IF(带宽='1000',1,0)) EPON口,SUM(IF(带宽='10000',1,0)) 10GPON口,count(*) 总和
         FROM (SELECT DISTINCT OLT名称,`OLT管理IP`,`带宽`,`PON板号`,`PON口号` FROM merge_table) as a
