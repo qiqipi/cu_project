@@ -14,33 +14,33 @@
 
     <update id="createMergeTable" parameterType="string">
         CREATE TABLE merge_table(
-                                    id BIGINT(20) not null auto_increment,
-                                    OLT名称 VARCHAR(255) DEFAULT null,
-                                    分局 VARCHAR(255) DEFAULT null,
-                                    分公司 VARCHAR(255) DEFAULT null,
-                                    OLT管理IP VARCHAR(255) DEFAULT null,
-                                    设备类型 VARCHAR(255) DEFAULT null,
-                                    带宽 VARCHAR(255) DEFAULT null,
-                                    通道1流入峰值 VARCHAR(255) DEFAULT null,
-                                    通道1流入峰值利用率 VARCHAR(255) DEFAULT null,
-                                    通道1流入均值 VARCHAR(255) DEFAULT null,
-                                    通道1流入均值利用率 VARCHAR(255) DEFAULT null,
-                                    通道2流入峰值 VARCHAR(255) DEFAULT null,
-                                    通道2流入峰值利用率 VARCHAR(255) DEFAULT null,
-                                    通道2流入均值 VARCHAR(255) DEFAULT null,
-                                    通道2流入均值利用率 VARCHAR(255) DEFAULT null,
-                                    PON板号 VARCHAR(255) DEFAULT null,
-                                    PON口号 VARCHAR(255) DEFAULT null,
-                                    `上网账号` VARCHAR(255) DEFAULT null,
-                                    通道1流入峰值采集时间 date DEFAULT null,
-                                    通道2流入峰值采集时间 date DEFAULT null,
+                                    id BIGINT(20) not null auto_increment COMMENT '字段id',
+                                    olt_name VARCHAR(255) DEFAULT null COMMENT 'OLT名称',
+                                    station VARCHAR(255) DEFAULT null COMMENT '分局',
+                                    company VARCHAR(255) DEFAULT null COMMENT '分公司',
+                                    ip VARCHAR(255) DEFAULT null COMMENT 'OLT管理IP',
+                                    machine_type VARCHAR(255) DEFAULT null COMMENT '设备类型',
+                                    band VARCHAR(255) DEFAULT null COMMENT '带宽',
+                                    channel1_in_peek VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值',
+                                    channel1_in_peek_usage VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值利用率',
+                                    channel1_in_avg VARCHAR(255) DEFAULT null COMMENT '通道1流入均值',
+                                    channel1_in_peek_avg VARCHAR(255) DEFAULT null COMMENT '通道1流入均值利用率',
+                                    channel2_in_peek VARCHAR(255) DEFAULT null COMMENT '通道2流入峰值',
+                                    channel2_in_peek_usage VARCHAR(255) DEFAULT null COMMENT '通道2流入峰值利用率',
+                                    channel2_in_avg VARCHAR(255) DEFAULT null COMMENT '通道2流入均值',
+                                    channel2_in_peek_avg VARCHAR(255) DEFAULT null COMMENT '通道2流入均值利用率',
+                                    pon_board_number VARCHAR(255) DEFAULT null COMMENT 'PON板号',
+                                    pon_port_number VARCHAR(255) DEFAULT null COMMENT 'PON口号',
+                                    account VARCHAR(255) DEFAULT null COMMENT '上网账号',
+                                    channel1_in_peek_time date DEFAULT null COMMENT '通道1流入峰值采集时间',
+                                    channel2_in_peek_time date DEFAULT null COMMENT '通道2流入峰值采集时间',
                                     PRIMARY key (id)
         );
     </update>
 
     <insert id="initMergeTable" parameterType="string">
-        INSERT into merge_table (OLT名称,分局,分公司,OLT管理IP,设备类型,带宽,通道1流入峰值,通道1流入峰值利用率,通道1流入均值,通道1流入均值利用率,通道2流入峰值,通道2流入峰值利用率,通道2流入均值,通道2流入均值利用率,PON板号,PON口号,上网账号,通道1流入峰值采集时间,通道2流入峰值采集时间)
-        SELECT `网元名称`,分局,分公司,OLT管理IP,设备类型,带宽,通道1流入峰值,通道1流入峰值利用率,通道1流入均值,通道1流入均值利用率,通道2流入峰值,通道2流入峰值利用率,通道2流入均值,通道2流入均值利用率,PON板号,PON口号,上网账号,通道1流入峰值采集时间,通道2流入峰值采集时间
+        INSERT into merge_table (olt_name,station,company,ip,machine_type,band,channel1_in_peek,channel1_in_peek_usage,channel1_in_avg,channel1_in_peek_avg,channel2_in_peek,channel2_in_peek_usage,channel2_in_avg,channel2_in_peek_avg,pon_board_number,pon_port_number,account,channel1_in_peek_time,channel2_in_peek_time)
+        SELECT `网元名称` olt_name,分局 station,分公司 company,OLT管理IP ip,设备类型 machine_type,带宽 band,通道1流入峰值 channel1_in_peek,通道1流入峰值利用率 channel1_in_peek_usage,通道1流入均值 channel1_in_avg,通道1流入均值利用率 channel1_in_peek_avg,通道2流入峰值 channel2_in_peek,通道2流入峰值利用率 channel2_in_peek_usage,通道2流入均值 channel2_in_avg,通道2流入均值利用率 channel2_in_peek_avg,PON板号 pon_board_number,PON口号 pon_port_number,上网账号 account,通道1流入峰值采集时间 channel1_in_peek_time,通道2流入峰值采集时间 channel2_in_peek_time
         FROM new_line_null a LEFT JOIN new_pon_traffic_null b on a.OLT端口号 = b.`PON口号` and a.`OLT槽位号` = b.`PON板号` and a.OLT = b.`网元名称`;
     </insert>
 
@@ -49,64 +49,65 @@
     <update id="createOLTChosenTable" parameterType="string">
         drop table if exists OLT_chosen;
         CREATE TABLE OLT_chosen(
-                                   id BIGINT(20) not null auto_increment,
-                                   OLT名称 VARCHAR(255) DEFAULT null,
-                                   OLT管理IP VARCHAR(255) DEFAULT null,
-                                   GPON口 VARCHAR(255) DEFAULT null,
-                                   EPON口 VARCHAR(255) DEFAULT null,
-                                   10GPON口 VARCHAR(255) DEFAULT null,
-                                   总和 VARCHAR(255) DEFAULT null,
+                                   id BIGINT(20) not null auto_increment COMMENT '字段id',
+                                   olt_name VARCHAR(255) DEFAULT null COMMENT 'OLT名称',
+                                   ip VARCHAR(255) DEFAULT null COMMENT 'OLT管理ip',
+                                   gpon_num VARCHAR(255) DEFAULT null COMMENT 'GPON口数量',
+                                   epon_num VARCHAR(255) DEFAULT null COMMENT 'EPON口数量',
+                                   10gpon_num VARCHAR(255) DEFAULT null COMMENT '10GPON口数量',
+                                   olt_sum VARCHAR(255) DEFAULT null COMMENT '总和',
                                    PRIMARY KEY (id)
         );
     </update>
 
     <insert id="insertOLTChosenTable" parameterType="string">
         set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-        INSERT INTO OLT_chosen(OLT名称,`OLT管理IP`,GPON口,EPON口,10GPON口,总和)
-        SELECT `OLT名称`,`OLT管理IP`,SUM(IF(带宽='2500',1,0)) GPON口,SUM(IF(带宽='1000',1,0)) EPON口,SUM(IF(带宽='10000',1,0)) 10GPON口,count(*) 总和
-        FROM (SELECT DISTINCT OLT名称,`OLT管理IP`,`带宽`,`PON板号`,`PON口号` FROM merge_table) as a
-        GROUP BY a.`OLT名称`;
+        INSERT INTO OLT_chosen(olt_name,ip,gpon_num,epon_num,10gpon_num,olt_sum)
+        SELECT olt_name,ip,SUM(IF(band='2500',1,0)) gpon_num,SUM(IF(band='1000',1,0)) epon_num,SUM(IF(band='10000',1,0)) 10gpon_num,count(*) olt_sum
+        FROM (SELECT DISTINCT olt_name,ip,band,pon_board_number,pon_port_number FROM merge_table) as a
+        GROUP BY a.olt_name;
     </insert>
 
     
     <select id="getRegion" resultType="java.util.HashMap">
-        SELECT DISTINCT 分局,分公司,OLT名称 from merge_table;
+        SELECT DISTINCT station,company,olt_name from merge_table;
     </select>
 
 
     <update id="createPlanTable">
-        drop table if exists plan_table;
+        DROP TABLE if EXISTS plan_table;
+
         CREATE TABLE plan_table(
-                                   id int(11) not null auto_increment,
-                                   OLT名称 varchar(255) DEFAULT null,
-                                   OLT管理IP VARCHAR(255) DEFAULT null,
-                                   `PON板号` VARCHAR(255) DEFAULT null,
-                                   `PON口号` VARCHAR(255) DEFAULT null,
-                                   `通道1流入峰值最大值` VARCHAR(255) DEFAULT null,
-                                   `通道2流入峰值最大值` VARCHAR(255) DEFAULT null,
-                                   `通道1均值最大值` VARCHAR(255) DEFAULT null,
-                                   `通道2均值最大值` VARCHAR(255) DEFAULT null,
-                                   `通道1预测流量值` VARCHAR(255) DEFAULT null,
-                                   `通道2预测流量值` VARCHAR(255) DEFAULT null,
-                                   `通道1趋势线` VARCHAR(255) DEFAULT null,
-                                   `通道2趋势线` VARCHAR(255) DEFAULT null,
-                                   `通道1流入峰值采集时间` VARCHAR(255) DEFAULT null,
-                                   `通道2流入峰值采集时间` VARCHAR(255) DEFAULT null,
+                                   id int(11) not null auto_increment COMMENT '字段id',
+                                   olt_name varchar(255) DEFAULT null COMMENT 'OLT名称',
+                                   ip VARCHAR(255) DEFAULT null COMMENT 'OLT管理IP',
+                                   pon_board_number VARCHAR(255) DEFAULT null COMMENT 'PON板号',
+                                   pon_port_number VARCHAR(255) DEFAULT null COMMENT 'PON口号',
+                                   channel1_in_peek_max VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值最大值',
+                                   channel2_in_peek_max VARCHAR(255) DEFAULT null COMMENT '通道2流入峰值最大值',
+                                   channel1_in_avg_max VARCHAR(255) DEFAULT null COMMENT '通道1均值最大值',
+                                   channel2_in_avg_max VARCHAR(255) DEFAULT null COMMENT '通道2均值最大值',
+                                   channel1_in_pred_max VARCHAR(255) DEFAULT null COMMENT '通道1预测流量最大值',
+                                   channel2_in_pred_max VARCHAR(255) DEFAULT null COMMENT '通道2预测流量最大值',
+                                   channel1_tendency VARCHAR(255) DEFAULT null COMMENT '通道1趋势线',
+                                   channel2_tendency VARCHAR(255) DEFAULT null COMMENT '通道2趋势线',
+                                   channel1_in_peek_max_time date DEFAULT null COMMENT '通道1流入峰值最大值采集时间',
+                                   channel2_in_peek_max_time date DEFAULT null COMMENT '通道2流入峰值最大值采集时间',
                                    PRIMARY KEY (id),
-                                   INDEX (`PON板号`,`PON口号`),
-                                   INDEX(OLT名称)
+                                   INDEX (pon_board_number,pon_port_number),
+                                   INDEX(olt_name)
         );
     </update>
 
     <insert id="insertPlanTable1">
         set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-        INSERT INTO plan_table(OLT名称,`OLT管理IP`,`PON板号`,`PON口号`,通道1流入峰值最大值,通道2流入峰值最大值,通道1均值最大值,通道2均值最大值,通道1流入峰值采集时间,通道2流入峰值采集时间)
-        SELECT OLT名称,`OLT管理IP`,`PON板号`,`PON口号`,max(通道1流入峰值) 通道1流入峰值最大值,MAX(通道2流入峰值) 通道2流入峰值最大值,max(通道1流入均值) 通道1均值最大值,max(通道2流入均值) 通道2均值最大值,通道1流入峰值采集时间,通道2流入峰值采集时间
-        from (SELECT DISTINCT OLT名称,`OLT管理IP`,`PON板号`,`PON口号`,通道1流入峰值,通道2流入峰值,通道1流入均值,通道2流入均值,通道1流入峰值采集时间,通道2流入峰值采集时间 FROM merge_table) a
-        GROUP BY OLT名称,`PON板号`,`PON口号`;
+        INSERT INTO plan_table(olt_name,ip,pon_board_number,pon_port_number,channel1_in_peek_max,channel2_in_peek_max,channel1_in_avg_max,channel2_in_avg_max ,channel1_in_peek_max_time,channel2_in_peek_max_time)
+        SELECT olt_name,ip,pon_board_number,pon_port_number,max(channel1_in_peek) channel1_in_peek_max ,MAX(channel2_in_peek) channel2_in_peek_max ,max(channel1_in_avg) channel1_in_avg_max,max(channel2_in_avg) channel2_in_avg_max,channel1_in_peek_time,channel2_in_peek_time
+        from (SELECT DISTINCT olt_name,ip,pon_board_number,pon_port_number,channel1_in_peek,channel2_in_peek,channel1_in_avg,channel2_in_avg,channel1_in_peek_time,channel2_in_peek_time FROM merge_table) a
+        GROUP BY pon_board_number,pon_port_number;
     </insert>
 
     <select id="getPlanTable" resultType="java.util.LinkedHashMap">
-        select * from plan_table where OLT名称 = #{OLT_name};
+        select * from plan_table where olt_name = #{OLT_name};
     </select>
 </mapper>
