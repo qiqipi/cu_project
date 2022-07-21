@@ -96,6 +96,7 @@ public class PON2022MigrationController {
         }catch (Exception e){
             System.out.println(e);
             return new Result(false,null,"创建表格失败","400");
+
         }
         List<Map<String, Object>> OLTPlanTable = pon2022MigrationService.getPlanTable(OLT_name);
         Result<List<Map<String, Object>>> listResult = new Result(true,OLTPlanTable,"获取数据成功","200");
