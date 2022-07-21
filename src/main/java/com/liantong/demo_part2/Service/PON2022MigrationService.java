@@ -21,5 +21,5 @@ public interface PON2022MigrationService {
 
     boolean createPlanTable() throws Exception;
 
-    List<Map<String,Object>> getPlanTable(String OLT_name);
+    List<Map<String,Object>> getPlanTable(String[] OLT_name);
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,9 +26,15 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         return aaaTable;
     }
 
-    public List<Map<String,Object>> getPlanTable(String OLT_name){
-        List<Map<String, Object>> planTable = pon2022MigrationMapper.getPlanTable(OLT_name);
-        return planTable;
+    public List<Map<String,Object>> getPlanTable(String[] OLT_names){
+        List<Map<String,Object>> res = new ArrayList<>();
+        for(String OLT_name : OLT_names){
+            List<Map<String, Object>> planTables = pon2022MigrationMapper.getPlanTable(OLT_name);
+            for(Map<String,Object> planTable : planTables){
+                res.add(planTable);
+            }
+        }
+        return res;
     }
 
     @Override

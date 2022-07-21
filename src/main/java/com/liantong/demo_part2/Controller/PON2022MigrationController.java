@@ -87,9 +87,9 @@ public class PON2022MigrationController {
 
     @RequestMapping(value = "/getPlanTable",method = RequestMethod.GET)
     @ApiOperation(value = "获取PlanTable(表二)")
-    @ApiImplicitParam(name = "OLT_name",value = "（必填）OLT_name",paramType = "query",required = true,type = "String",defaultValue = "HPXXL_HW_OLT13")
+    @ApiImplicitParam(name = "OLT_names",value = "（必填）OLT_names",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "HPXXL_HW_OLT13,NKHMJ_HW_OLT07")
     @ResponseBody
-    public Result getPlanTable(@RequestParam String OLT_name){
+    public Result getPlanTable(@RequestParam String[] OLT_names){
         boolean flag;
         try {
             flag = pon2022MigrationService.createPlanTable();
@@ -98,7 +98,7 @@ public class PON2022MigrationController {
             return new Result(false,null,"创建表格失败","400");
 
         }
-        List<Map<String, Object>> OLTPlanTable = pon2022MigrationService.getPlanTable(OLT_name);
+        List<Map<String, Object>> OLTPlanTable = pon2022MigrationService.getPlanTable(OLT_names);
         Result<List<Map<String, Object>>> listResult = new Result(true,OLTPlanTable,"获取数据成功","200");
 
         return listResult;
