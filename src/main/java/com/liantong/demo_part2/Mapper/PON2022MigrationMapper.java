@@ -25,4 +25,14 @@ public interface PON2022MigrationMapper {
     void createOLTChosenTable();
 
     int insertOLTChosenTable();
+
+    @MapKey("id")
+    List<Map<String,Object>> getRegion();
+
+    void createPlanTable();
+
+    void insertPlanTable1();
+
+    @MapKey("id")
+    List<Map<String,Object>> getPlanTable(String OLT_name);
 }

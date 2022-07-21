@@ -5,7 +5,7 @@
 <mapper namespace="com.liantong.demo_part2.Mapper.PON2022MigrationMapper">
 
     <select id="getOLTChosenTable" resultType="java.util.LinkedHashMap">
-        select * from OLT_chosen;
+        select * from OLT_chosen ;
     </select>
 
     <update id="dropMergeTable">
@@ -21,26 +21,26 @@
                                     OLT管理IP VARCHAR(255) DEFAULT null,
                                     设备类型 VARCHAR(255) DEFAULT null,
                                     带宽 VARCHAR(255) DEFAULT null,
-                                    千兆流入峰值 VARCHAR(255) DEFAULT null,
-                                    千兆流入峰值利用率 VARCHAR(255) DEFAULT null,
-                                    千兆流入均值 VARCHAR(255) DEFAULT null,
-                                    千兆流入均值利用率 VARCHAR(255) DEFAULT null,
-                                    万兆流入峰值 VARCHAR(255) DEFAULT null,
-                                    万兆流入峰值利用率 VARCHAR(255) DEFAULT null,
-                                    万兆流入均值 VARCHAR(255) DEFAULT null,
-                                    万兆流入均值利用率 VARCHAR(255) DEFAULT null,
+                                    通道1流入峰值 VARCHAR(255) DEFAULT null,
+                                    通道1流入峰值利用率 VARCHAR(255) DEFAULT null,
+                                    通道1流入均值 VARCHAR(255) DEFAULT null,
+                                    通道1流入均值利用率 VARCHAR(255) DEFAULT null,
+                                    通道2流入峰值 VARCHAR(255) DEFAULT null,
+                                    通道2流入峰值利用率 VARCHAR(255) DEFAULT null,
+                                    通道2流入均值 VARCHAR(255) DEFAULT null,
+                                    通道2流入均值利用率 VARCHAR(255) DEFAULT null,
                                     PON板号 VARCHAR(255) DEFAULT null,
                                     PON口号 VARCHAR(255) DEFAULT null,
                                     `上网账号` VARCHAR(255) DEFAULT null,
-                                    千兆流出峰值采集时间 date DEFAULT null,
-                                    万兆流出峰值采集时间 date DEFAULT null,
+                                    通道1流入峰值采集时间 date DEFAULT null,
+                                    通道2流入峰值采集时间 date DEFAULT null,
                                     PRIMARY key (id)
         );
     </update>
 
     <insert id="initMergeTable" parameterType="string">
-        INSERT into merge_table (OLT名称,分局,分公司,OLT管理IP,设备类型,带宽,千兆流入峰值,千兆流入峰值利用率,千兆流入均值,千兆流入均值利用率,万兆流入峰值,万兆流入峰值利用率,万兆流入均值,万兆流入均值利用率,PON板号,PON口号,上网账号,千兆流出峰值采集时间,万兆流出峰值采集时间)
-        SELECT `网元名称`,分局,分公司,OLT管理IP,设备类型,带宽,千兆流入峰值,千兆流入峰值利用率,千兆流入均值,千兆流入均值利用率,万兆流入峰值,万兆流入峰值利用率,万兆流入均值,万兆流入均值利用率,PON板号,PON口号,上网账号,千兆流出峰值采集时间,万兆流出峰值采集时间
+        INSERT into merge_table (OLT名称,分局,分公司,OLT管理IP,设备类型,带宽,通道1流入峰值,通道1流入峰值利用率,通道1流入均值,通道1流入均值利用率,通道2流入峰值,通道2流入峰值利用率,通道2流入均值,通道2流入均值利用率,PON板号,PON口号,上网账号,通道1流入峰值采集时间,通道2流入峰值采集时间)
+        SELECT `网元名称`,分局,分公司,OLT管理IP,设备类型,带宽,通道1流入峰值,通道1流入峰值利用率,通道1流入均值,通道1流入均值利用率,通道2流入峰值,通道2流入峰值利用率,通道2流入均值,通道2流入均值利用率,PON板号,PON口号,上网账号,通道1流入峰值采集时间,通道2流入峰值采集时间
         FROM new_line_null a LEFT JOIN new_pon_traffic_null b on a.OLT端口号 = b.`PON口号` and a.`OLT槽位号` = b.`PON板号` and a.OLT = b.`网元名称`;
     </insert>
 
@@ -68,4 +68,45 @@
         GROUP BY a.`OLT名称`;
     </insert>
 
+    
+    <select id="getRegion" resultType="java.util.HashMap">
+        SELECT DISTINCT 分局,分公司,OLT名称 from merge_table;
+    </select>
+
+
+    <update id="createPlanTable">
+        drop table if exists plan_table;
+        CREATE TABLE plan_table(
+                                   id int(11) not null auto_increment,
+                                   OLT名称 varchar(255) DEFAULT null,
+                                   OLT管理IP VARCHAR(255) DEFAULT null,
+                                   `PON板号` VARCHAR(255) DEFAULT null,
+                                   `PON口号` VARCHAR(255) DEFAULT null,
+                                   `通道1流入峰值最大值` VARCHAR(255) DEFAULT null,
+                                   `通道2流入峰值最大值` VARCHAR(255) DEFAULT null,
+                                   `通道1均值最大值` VARCHAR(255) DEFAULT null,
+                                   `通道2均值最大值` VARCHAR(255) DEFAULT null,
+                                   `通道1预测流量值` VARCHAR(255) DEFAULT null,
+                                   `通道2预测流量值` VARCHAR(255) DEFAULT null,
+                                   `通道1趋势线` VARCHAR(255) DEFAULT null,
+                                   `通道2趋势线` VARCHAR(255) DEFAULT null,
+                                   `通道1流入峰值采集时间` VARCHAR(255) DEFAULT null,
+                                   `通道2流入峰值采集时间` VARCHAR(255) DEFAULT null,
+                                   PRIMARY KEY (id),
+                                   INDEX (`PON板号`,`PON口号`),
+                                   INDEX(OLT名称)
+        );
+    </update>
+
+    <insert id="insertPlanTable1">
+        set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+        INSERT INTO plan_table(OLT名称,`OLT管理IP`,`PON板号`,`PON口号`,通道1流入峰值最大值,通道2流入峰值最大值,通道1均值最大值,通道2均值最大值,通道1流入峰值采集时间,通道2流入峰值采集时间)
+        SELECT OLT名称,`OLT管理IP`,`PON板号`,`PON口号`,max(通道1流入峰值) 通道1流入峰值最大值,MAX(通道2流入峰值) 通道2流入峰值最大值,max(通道1流入均值) 通道1均值最大值,max(通道2流入均值) 通道2均值最大值,通道1流入峰值采集时间,通道2流入峰值采集时间
+        from (SELECT DISTINCT OLT名称,`OLT管理IP`,`PON板号`,`PON口号`,通道1流入峰值,通道2流入峰值,通道1流入均值,通道2流入均值,通道1流入峰值采集时间,通道2流入峰值采集时间 FROM merge_table) a
+        GROUP BY OLT名称,`PON板号`,`PON口号`;
+    </insert>
+
+    <select id="getPlanTable" resultType="java.util.LinkedHashMap">
+        select * from plan_table where OLT名称 = #{OLT_name};
+    </select>
 </mapper>

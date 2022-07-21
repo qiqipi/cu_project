@@ -4,11 +4,14 @@ import com.liantong.demo_part2.Service.PON2022MigrationService;
 import com.liantong.demo_part2.Utils.JsonResult;
 import com.liantong.demo_part2.Utils.Result;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,7 +55,21 @@ public class PON2022MigrationController {
     }
 
 
-    @RequestMapping(value = "/selectOltChosen",method = RequestMethod.GET)
+    @RequestMapping(value = "/getRegion",method = RequestMethod.GET)
+    @ApiOperation(value = "获得地区信息", response = Result.class)
+    @ResponseBody
+    public Result getRegion(){
+        Result<List<Map<String, Object>>> listResult;
+        List<Map<String, Object>> region = pon2022MigrationService.getRegion();
+        if(region.isEmpty()){
+            return new Result(false,null,"创建表格失败","400");
+        }else{
+            listResult = new Result(true,region,"获取数据成功","200");
+        }
+        return listResult;
+    }
+
+    @RequestMapping(value = "/getOltChosen",method = RequestMethod.GET)
     @ApiOperation(value = "获取OLTChosen(表一)")
     @ResponseBody
     public Result getAaaTable(){
@@ -65,6 +82,24 @@ public class PON2022MigrationController {
         }
         List<Map<String, Object>> OLTChosenTable = pon2022MigrationService.getOLTChosenTable();
         Result<List<Map<String, Object>>> listResult = new Result(true,OLTChosenTable,"获取数据成功","200");
+        return listResult;
+    }
+
+    @RequestMapping(value = "/getPlanTable",method = RequestMethod.GET)
+    @ApiOperation(value = "获取PlanTable(表二)")
+    @ApiImplicitParam(name = "OLT_name",value = "（必填）OLT_name",paramType = "query",required = true,type = "String",defaultValue = "HPXXL_HW_OLT13")
+    @ResponseBody
+    public Result getPlanTable(@RequestParam String OLT_name){
+        boolean flag;
+        try {
+            flag = pon2022MigrationService.createPlanTable();
+        }catch (Exception e){
+            System.out.println(e);
+            return new Result(false,null,"创建表格失败","400");
+        }
+        List<Map<String, Object>> OLTPlanTable = pon2022MigrationService.getPlanTable(OLT_name);
+        Result<List<Map<String, Object>>> listResult = new Result(true,OLTPlanTable,"获取数据成功","200");
+
         return listResult;
     }
 }

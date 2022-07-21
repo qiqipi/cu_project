@@ -16,4 +16,10 @@ public interface PON2022MigrationService {
 
     boolean createOLTChosenTable() throws Exception;
 
+
+    List<Map<String,Object>> getRegion();
+
+    boolean createPlanTable() throws Exception;
+
+    List<Map<String,Object>> getPlanTable(String OLT_name);
 }

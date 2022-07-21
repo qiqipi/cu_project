@@ -25,6 +25,10 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         return aaaTable;
     }
 
+    public List<Map<String,Object>> getPlanTable(String OLT_name){
+        List<Map<String, Object>> planTable = pon2022MigrationMapper.getPlanTable(OLT_name);
+        return planTable;
+    }
 
     @Override
     public boolean createMergeTable() throws Exception {
@@ -53,5 +57,22 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         return true;
     }
 
+
+    public List<Map<String,Object>> getRegion(){
+        List<Map<String, Object>> region = pon2022MigrationMapper.getRegion();
+        return region;
+    }
+
+
+    public boolean createPlanTable() throws Exception {
+        pon2022MigrationMapper.createPlanTable();
+        pon2022MigrationMapper.insertPlanTable1();
+        try {
+        }catch (Exception e){
+            throw new Exception("生成PlanTable表出错");
+        }
+        System.out.println("PlanTable完成");
+        return true;
+    }
 
 }
