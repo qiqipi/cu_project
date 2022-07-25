@@ -20,7 +20,13 @@
                                     company VARCHAR(255) DEFAULT null COMMENT '分公司',
                                     ip VARCHAR(255) DEFAULT null COMMENT 'OLT管理IP',
                                     machine_type VARCHAR(255) DEFAULT null COMMENT '设备类型',
-                                    band VARCHAR(255) DEFAULT null COMMENT '带宽',
+                                    technical VARCHAR(255) DEFAULT null COMMENT '技术制式',
+                                    out_band VARCHAR(255) DEFAULT null COMMENT '流出带宽',
+                                    in_band VARCHAR(255) DEFAULT null COMMENT '流入带宽',
+                                    all_in_peek VARCHAR(255) DEFAULT null COMMENT '流入峰值',
+                                    all_in_peek_usage VARCHAR(255) DEFAULT null COMMENT '流入峰值利用率',
+                                    all_in_avg VARCHAR(255) DEFAULT null COMMENT '流入均值',
+                                    all_in_peek_avg VARCHAR(255) DEFAULT null COMMENT '流入均值利用率',
                                     channel1_in_peek VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值',
                                     channel1_in_peek_usage VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值利用率',
                                     channel1_in_avg VARCHAR(255) DEFAULT null COMMENT '通道1流入均值',
@@ -39,10 +45,10 @@
     </update>
 
     <insert id="initMergeTable" parameterType="string">
-        INSERT into merge_table (olt_name,station,company,ip,machine_type,band,channel1_in_peek,channel1_in_peek_usage,channel1_in_avg,channel1_in_peek_avg,channel2_in_peek,channel2_in_peek_usage,channel2_in_avg,channel2_in_peek_avg,pon_board_number,pon_port_number,account,channel1_in_peek_time,channel2_in_peek_time)
-        SELECT `网元名称` olt_name,分局 station,分公司 company,OLT管理IP ip,设备类型 machine_type,带宽 band,通道1流入峰值 channel1_in_peek,通道1流入峰值利用率 channel1_in_peek_usage,通道1流入均值 channel1_in_avg,通道1流入均值利用率 channel1_in_peek_avg,通道2流入峰值 channel2_in_peek,通道2流入峰值利用率 channel2_in_peek_usage,通道2流入均值 channel2_in_avg,通道2流入均值利用率 channel2_in_peek_avg,PON板号 pon_board_number,PON口号 pon_port_number,上网账号 account,通道1流入峰值采集时间 channel1_in_peek_time,通道2流入峰值采集时间 channel2_in_peek_time
+        INSERT into merge_table (olt_name,station,company,ip,machine_type,technical,out_band,in_band,all_in_peek,all_in_avg,channel1_in_peek,channel1_in_avg,channel2_in_peek,channel2_in_avg,pon_board_number,pon_port_number,account,channel1_in_peek_time,channel2_in_peek_time)
+        SELECT `网元名称` olt_name,分局 station,分公司 company,OLT管理IP ip,设备类型 machine_type,技术制式,流出方向带宽,流入方向带宽,流入峰值,流入均值,通道1流入峰值 channel1_in_peek,通道1流入均值 channel1_in_avg,通道2流入峰值 channel2_in_peek,通道2流入均值 channel2_in_avg,PON板号 pon_board_number,PON口号 pon_port_number,上网账号 account,通道1流入峰值采集时间 channel1_in_peek_time,通道2流入峰值采集时间 channel2_in_peek_time
         FROM new_line_null a LEFT JOIN new_pon_traffic_null b on a.OLT端口号 = b.`PON口号` and a.`OLT槽位号` = b.`PON板号` and a.OLT = b.`网元名称`;
-    </insert>
+</insert>
 
 
 
@@ -52,9 +58,13 @@
                                    id BIGINT(20) not null auto_increment COMMENT '字段id',
                                    olt_name VARCHAR(255) DEFAULT null COMMENT 'OLT名称',
                                    ip VARCHAR(255) DEFAULT null COMMENT 'OLT管理ip',
-                                   gpon_num VARCHAR(255) DEFAULT null COMMENT 'GPON口数量',
                                    epon_num VARCHAR(255) DEFAULT null COMMENT 'EPON口数量',
-                                   10gpon_num VARCHAR(255) DEFAULT null COMMENT '10GPON口数量',
+                                   gpon_num VARCHAR(255) DEFAULT null COMMENT 'GPON口数量',
+                                   10g_pon_num VARCHAR(255) DEFAULT null COMMENT '10GPON口数量',
+                                   xg_pon_num VARCHAR(255) DEFAULT null comment 'XG-PON口数量',
+                                   xgs_pon_num VARCHAR(255) DEFAULT null comment 'XG-PON口数量',
+                                   combo_xg_pon_num VARCHAR(255) DEFAULT null comment 'Combo_Pon(XG_PON)口数量',
+                                   combo_xgs_pon_num VARCHAR(255) DEFAULT null comment 'Combo_Pon(XGS_PON)口数量',
                                    olt_sum VARCHAR(255) DEFAULT null COMMENT '总和',
                                    PRIMARY KEY (id)
         );
@@ -62,9 +72,9 @@
 
     <insert id="insertOLTChosenTable" parameterType="string">
         set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-        INSERT INTO OLT_chosen(olt_name,ip,gpon_num,epon_num,10gpon_num,olt_sum)
-        SELECT olt_name,ip,SUM(IF(band='2500',1,0)) gpon_num,SUM(IF(band='1000',1,0)) epon_num,SUM(IF(band='10000',1,0)) 10gpon_num,count(*) olt_sum
-        FROM (SELECT DISTINCT olt_name,ip,band,pon_board_number,pon_port_number FROM merge_table) as a
+        INSERT INTO OLT_chosen(olt_name,ip,epon_num,gpon_num,10g_pon_num,xg_pon_num,xgs_pon_num,combo_xg_pon_num,combo_xgs_pon_num,olt_sum)
+        SELECT olt_name,ip,SUM(IF(technical='EPON',1,0)) gpon_num,SUM(IF(technical='GPON',1,0)) epon_num,SUM(IF(technical='10G EPON',1,0)) 10gpon_num,SUM(IF(technical='XG PON',1,0)),SUM(IF(technical='XGS PON',1,0)),SUM(IF(technical like 'Combo PON(XG PON)',1,0)),SUM(IF(technical='Combo PON(XGS PON)',1,0)),count(*) olt_sum
+        FROM (SELECT DISTINCT olt_name,ip,technical,pon_board_number,pon_port_number FROM merge_table) as a
         GROUP BY a.olt_name;
     </insert>
 
