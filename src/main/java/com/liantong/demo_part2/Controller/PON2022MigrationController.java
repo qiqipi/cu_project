@@ -89,6 +89,7 @@ public class PON2022MigrationController {
     @ApiOperation(value = "获取PlanTable(表二)")
     @ApiImplicitParam(name = "OLT_names",value = "（必填）OLT_names",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "HPXXL_HW_OLT13,NKHMJ_HW_OLT07")
     @ResponseBody
+
     public Result getPlanTable(@RequestParam String[] OLT_names){
         boolean flag;
         try {

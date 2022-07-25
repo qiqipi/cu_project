@@ -26,6 +26,7 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         return aaaTable;
     }
 
+
     public List<Map<String,Object>> getPlanTable(String[] OLT_names){
         List<Map<String,Object>> res = new ArrayList<>();
         for(String OLT_name : OLT_names){

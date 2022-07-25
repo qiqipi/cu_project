@@ -26,6 +26,7 @@ public interface PON2022MigrationMapper {
 
     int insertOLTChosenTable();
 
+
     @MapKey("id")
     List<Map<String,Object>> getRegion();
 
