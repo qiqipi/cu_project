@@ -23,4 +23,6 @@ public interface PON2022MigrationService {
     boolean createPlanTable() throws Exception;
 
     List<Map<String,Object>> getPlanTable(String[] OLT_name);
+
+    double getPredict1(String OLTName, String PONBoard, String PONPort);
 }

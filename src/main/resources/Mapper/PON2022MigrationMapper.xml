@@ -121,4 +121,17 @@
     <select id="getPlanTable" resultType="java.util.LinkedHashMap">
         select * from plan_table where olt_name = #{OLT_name};
     </select>
+
+
+    <select id="getChannel1InPeek" resultType="double">
+        SELECT channel1_in_avg from merge_table
+        WHERE olt_name = #{OLTName} and pon_board_number =  #{PONBoard} and pon_port_number = #{PONPort};
+    </select>
+
+
+    <update id="updatePred" parameterType="string">
+        update plan_table set channel1_in_pred_max = #{value}
+        where olt_name = #{OLTName} and pon_board_number =  #{PONBoard} and pon_port_number = #{PONPort};
+    </update>
+
 </mapper>

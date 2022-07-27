@@ -36,4 +36,9 @@ public interface PON2022MigrationMapper {
 
     @MapKey("id")
     List<Map<String,Object>> getPlanTable(String OLT_name);
+
+    @MapKey("id")
+    List<Double> getChannel1InPeek(String OLTName,String PONBoard,String PONPort);
+
+    void updatePred(String OLTName, String  value, String fieldName, String PONBoard, String PONPort);
 }

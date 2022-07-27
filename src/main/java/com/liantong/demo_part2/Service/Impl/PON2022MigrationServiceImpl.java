@@ -29,13 +29,101 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
 
     public List<Map<String,Object>> getPlanTable(String[] OLT_names){
         List<Map<String,Object>> res = new ArrayList<>();
+        double channelInPeekMax1 = 0;
+        double channelInPeekMin1 = Double.MAX_VALUE;
+        double channelInAvgMax1 = 0;
+        double channelInAvgMin1 = Double.MAX_VALUE;
+        double channelInPeekMax2 = 0;
+        double channelInPeekMin2 = Double.MAX_VALUE;
+        double channelInAvgMax2 = 0;
+        double channelInAvgMin2 = Double.MAX_VALUE;
+        double channelInPeekPreMax1 = 0;
+        double channelInPeekPreMin1 = Integer.MAX_VALUE;
         for(String OLT_name : OLT_names){
             List<Map<String, Object>> planTables = pon2022MigrationMapper.getPlanTable(OLT_name);
             for(Map<String,Object> planTable : planTables){
+                String  PONBoard = (String) planTable.get("pon_board_number");
+                String  PONPort = (String) planTable.get("pon_port_number");
+                pon2022MigrationMapper.updatePred(OLT_name,"111.9","channel1_in_pred_max",PONBoard,PONPort);
+                pon2022MigrationMapper.updatePred(OLT_name,"112.9","channel2_in_pred_max",PONBoard,PONPort);
+                planTable.put("channel1_in_pred_max",111.9);
+                planTable.put("channel1_in_pred_max",112.9);
+//                double predict1 = getPredict1(OLT_name, PONBoard, PONPort);
+//                planTable.put("channel1_in_pred_max",predict1);
+//                channelInPeekPreMax1 = Math.max(channelInPeekPreMax1,predict1);
+//                channelInPeekPreMin1 = Math.min(channelInPeekPreMin1,predict1);
+//                channelInPeekMax1 = Math.max(channelInPeekMax1,Double.parseDouble((String) planTable.get("channel1_in_peek_max")));
+//                channelInPeekMin1 = Math.min(channelInPeekMin1,Double.parseDouble((String) planTable.get("channel1_in_peek_max")));
+//                channelInAvgMax1 = Math.max(channelInAvgMax1,Double.parseDouble((String) planTable.get("channel1_in_avg_max")));
+//                channelInAvgMin1 = Math.min(channelInAvgMin1,Double.parseDouble((String) planTable.get("channel1_in_avg_max")));
+//                if(planTable.containsKey("channel2_in_peek_max")){
+//                    channelInPeekMax2 = Math.max(channelInPeekMax2,Double.parseDouble((String) planTable.get("channel2_in_peek_max")));
+//                    channelInPeekMin2 = Math.min(channelInPeekMin2,Double.parseDouble((String) planTable.get("channel2_in_peek_max")));
+//                    channelInAvgMax2 = Math.max(channelInAvgMax2,Double.parseDouble((String) planTable.get("channel2_in_avg_max")));
+//                    channelInAvgMin2 = Math.min(channelInAvgMin2,Double.parseDouble((String) planTable.get("channel2_in_avg_max")));
+//                }
                 res.add(planTable);
             }
+
         }
+//        for (Map<String ,Object> planTable : res){
+//            double channel1MaxIn = Double.parseDouble((String) planTable.get("channel1_in_peek_max"));
+//            double channel1AvgIn = Double.parseDouble((String) planTable.get("channel1_in_avg_max"));
+//            double channel1PreIn = (double) planTable.get("channel1_in_pred_max");
+//            planTable.put("channel1_in_peek_max",(channel1MaxIn - channelInPeekMin1) / (channelInPeekMax1 - channelInPeekMin1));
+//            planTable.put("channel1_in_avg_max",(channel1AvgIn - channelInAvgMin1) / (channelInAvgMax1 - channelInAvgMin1));
+//            planTable.put("channel1_in_pred_max",(channel1PreIn - channelInPeekPreMin1) / (channelInPeekPreMax1 - channelInPeekPreMin1));
+//            if(planTable.containsKey("channel2_in_peek_max")){
+//                double channel2MaxIn = Double.parseDouble((String) planTable.get("channel2_in_peek_max"));
+//                double channel2AvgIn = Double.parseDouble((String) planTable.get("channel2_in_avg_max"));
+//                planTable.put("channel2_in_peek_max",(channel2MaxIn - channelInPeekMin2) / (channelInPeekMax2 - channelInPeekMin2));
+//                planTable.put("channel2_in_avg_max",(channel2AvgIn - channelInAvgMin2) / (channelInAvgMax2 - channelInAvgMin2));
+//            }
+//
+//        }
         return res;
+    }
+
+    @Override
+    public double getPredict1(String OLTName, String PONBoard, String PONPort) {
+        List<Double> list = pon2022MigrationMapper.getChannel1InPeek(OLTName,PONBoard,PONPort);
+        double [] data = new double[list.size()];
+        for(int i = 0;i < list.size();i++){
+            data[i] = list.get(i);
+        }
+        double[] newData = data.clone();
+        int count = newData.length;
+        double s = 0.0;
+        int i = 0;
+        while (i<=30){
+            s = 0.0;
+            for (int j = 0; j < count; j++)
+            {
+                s += (j + 1) * newData[j];
+            }
+            s /= (count * (count + 1) / 2);
+            for (int j = 0; j < count - 1; j++)
+            {
+                newData[j] = newData[j + 1];
+            }
+            newData[count - 1] = s;
+
+            double nd =newData[newData.length-1];
+            double cs = 0;
+            int js = 0;
+            for(int h=0; h<newData.length-1; h++){
+                cs = newData[h];
+                if(nd == cs){
+                    js++;
+                }
+            }
+            if(js == newData.length-1){
+                break;
+            }
+            i++;
+        }
+        String  str = String.format("%.2f",s);
+        return Double.parseDouble(str);
     }
 
     @Override
