@@ -111,5 +111,20 @@ public class PON2022MigrationController {
     }
 
 
+    @RequestMapping(value = "/getTable2Fields",method = RequestMethod.GET)
+    @ApiOperation(value = "获取设置权重的字段")
+    @ResponseBody
+    public String[] getChosenFields(){
+        String s[] = new String[8];
+        s[0] = "通道1流入峰值最大值";
+        s[1] = "通道2流入峰值最大值";
+        s[2] = "通道1均值最大值";
+        s[3] = "通道2均值最大值";
+        s[4] = "通道1预测流量最大值";
+        s[5] = "通道2预测流量最大值";
+        s[6] = "通道1趋势线";
+        s[7] = "通道2趋势线";
+        return s;
+    }
 
 }
