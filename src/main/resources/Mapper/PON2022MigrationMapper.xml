@@ -115,7 +115,8 @@
         set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
         INSERT INTO plan_table(olt_concat,olt_name,pon_board_number,pon_port_number,channel1_in_peek_max,channel2_in_peek_max,channel1_in_avg_max,channel2_in_avg_max ,channel1_in_peek_max_time,channel2_in_peek_max_time)
         SELECT CONCAT(`olt_name`,'_',`pon_board_number`,'_',`pon_port_number`),olt_name,pon_board_number,pon_port_number,max(channel1_in_peek) channel1_in_peek_max ,MAX(channel2_in_peek) channel2_in_peek_max ,max(channel1_in_avg) channel1_in_avg_max,max(channel2_in_avg) channel2_in_avg_max,channel1_in_peek_time,channel2_in_peek_time
-        from (SELECT DISTINCT olt_name,ip,pon_board_number,pon_port_number,channel1_in_peek,channel2_in_peek,channel1_in_avg,channel2_in_avg,channel1_in_peek_time,channel2_in_peek_time FROM merge_table) a
+        from (SELECT DISTINCT olt_name,ip,pon_board_number,pon_port_number,channel1_in_peek,channel2_in_peek,channel1_in_avg,channel2_in_avg,channel1_in_peek_time,channel2_in_peek_time FROM merge_table
+            where channel1_in_peek_time between str_to_date(#{time1},'%Y-%m-%d') and str_to_date(#{time2},'%Y-%m-%d')) a
         GROUP BY pon_board_number,pon_port_number;
     </insert>
 

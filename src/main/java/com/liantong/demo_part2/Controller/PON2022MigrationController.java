@@ -88,13 +88,17 @@ public class PON2022MigrationController {
 
     @RequestMapping(value = "/getPlanTable",method = RequestMethod.GET)
     @ApiOperation(value = "获取PlanTable(表二)")
-    @ApiImplicitParam(name = "OLT_names",value = "（必填）OLT_names",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "HPXXL_HW_OLT13,NKHMJ_HW_OLT07")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "OLT_names",value = "（必填）OLT_names",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "HPXXL_HW_OLT13,NKHMJ_HW_OLT07"),
+            @ApiImplicitParam(name = "time",value = "（必填）time",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "2022-02-12fafaffd,2022-02-2222fafaffd")
+    })
+
     @ResponseBody
 
-    public Result getPlanTable(@RequestParam String[] OLT_names){
+    public Result getPlanTable(@RequestParam String[] OLT_names,@RequestParam String[] time){
         boolean flag;
         try {
-            flag = pon2022MigrationService.createPlanTable();
+            flag = pon2022MigrationService.createPlanTable(time);
         }catch (Exception e){
             System.out.println(e);
             return new Result(false,null,"创建表格失败","400");

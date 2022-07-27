@@ -20,7 +20,7 @@ public interface PON2022MigrationService {
 
     List<Map<String,Object>> getRegion();
 
-    boolean createPlanTable() throws Exception;
+    boolean createPlanTable(String[] time) throws Exception;
 
     List<Map<String,Object>> getPlanTable(String[] OLT_name);
 

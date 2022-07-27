@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -162,9 +163,11 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
     }
 
 
-    public boolean createPlanTable() throws Exception {
+    public boolean createPlanTable(String []time) throws Exception {
+        String time1 = time[0].substring(0,10);
+        String time2 = time[1].substring(0,10);
         pon2022MigrationMapper.createPlanTable();
-        pon2022MigrationMapper.insertPlanTable1();
+        pon2022MigrationMapper.insertPlanTable1(time1,time2);
         try {
         }catch (Exception e){
             throw new Exception("生成PlanTable表出错");

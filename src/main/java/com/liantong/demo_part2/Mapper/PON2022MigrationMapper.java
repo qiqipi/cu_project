@@ -32,7 +32,7 @@ public interface PON2022MigrationMapper {
 
     void createPlanTable();
 
-    void insertPlanTable1();
+    void insertPlanTable1(String time1 ,String  time2);
 
     @MapKey("id")
     List<Map<String,Object>> getPlanTable(String OLT_name);
