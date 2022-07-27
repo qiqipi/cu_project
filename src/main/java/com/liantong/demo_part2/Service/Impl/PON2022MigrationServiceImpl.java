@@ -48,6 +48,8 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
                 pon2022MigrationMapper.updatePred(OLT_name,"112.9","channel2_in_pred_max",PONBoard,PONPort);
                 planTable.put("channel1_in_pred_max",111.9);
                 planTable.put("channel1_in_pred_max",112.9);
+                planTable.put("channel1_tendency",1);
+                planTable.put("channel2_tendency",0);
 //                double predict1 = getPredict1(OLT_name, PONBoard, PONPort);
 //                planTable.put("channel1_in_pred_max",predict1);
 //                channelInPeekPreMax1 = Math.max(channelInPeekPreMax1,predict1);
