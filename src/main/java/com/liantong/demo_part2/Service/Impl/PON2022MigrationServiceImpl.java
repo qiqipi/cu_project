@@ -147,7 +147,7 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
     public boolean createOLTChosenTable() throws Exception {
 
         pon2022MigrationMapper.createOLTChosenTable();
-        pon2022MigrationMapper.insertOLTChosenTable();
+            pon2022MigrationMapper.insertOLTChosenTable();
         try {
         }catch (Exception e){
             throw new Exception("生成OLTChosen表出错");

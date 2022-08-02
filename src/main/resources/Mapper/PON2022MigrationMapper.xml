@@ -56,6 +56,8 @@
         drop table if exists OLT_chosen;
         CREATE TABLE OLT_chosen(
                                    id BIGINT(20) not null auto_increment COMMENT '字段id',
+                                   station VARCHAR(255) DEFAULT null COMMENT '分局',
+                                   company VARCHAR(255) DEFAULT null COMMENT '分公司',
                                    olt_name VARCHAR(255) DEFAULT null COMMENT 'OLT名称',
                                    ip VARCHAR(255) DEFAULT null COMMENT 'OLT管理ip',
                                    epon_num VARCHAR(255) DEFAULT null COMMENT 'EPON口数量',
@@ -68,13 +70,14 @@
                                    olt_sum VARCHAR(255) DEFAULT null COMMENT '总和',
                                    PRIMARY KEY (id)
         );
+
     </update>
 
     <insert id="insertOLTChosenTable" parameterType="string">
         set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-        INSERT INTO OLT_chosen(olt_name,ip,epon_num,gpon_num,10g_pon_num,xg_pon_num,xgs_pon_num,combo_xg_pon_num,combo_xgs_pon_num,olt_sum)
-        SELECT olt_name,ip,SUM(IF(technical='EPON',1,0)) gpon_num,SUM(IF(technical='GPON',1,0)) epon_num,SUM(IF(technical='10G EPON',1,0)) 10gpon_num,SUM(IF(technical='XG PON',1,0)),SUM(IF(technical='XGS PON',1,0)),SUM(IF(technical like 'Combo PON(XG PON)',1,0)),SUM(IF(technical='Combo PON(XGS PON)',1,0)),count(*) olt_sum
-        FROM (SELECT DISTINCT olt_name,ip,technical,pon_board_number,pon_port_number FROM merge_table) as a
+        INSERT INTO OLT_chosen(station,company,olt_name,ip,epon_num,gpon_num,10g_pon_num,xg_pon_num,xgs_pon_num,combo_xg_pon_num,combo_xgs_pon_num,olt_sum)
+        SELECT station,company,olt_name,ip,SUM(IF(technical='EPON',1,0)) gpon_num,SUM(IF(technical='GPON',1,0)) epon_num,SUM(IF(technical='10G EPON',1,0)) 10gpon_num,SUM(IF(technical='XG PON',1,0)),SUM(IF(technical='XGS PON',1,0)),SUM(IF(technical like 'Combo PON(XG PON)',1,0)),SUM(IF(technical='Combo PON(XGS PON)',1,0)),count(*) olt_sum
+        FROM (SELECT DISTINCT station,company,olt_name,ip,technical,pon_board_number,pon_port_number FROM merge_table) as a
         GROUP BY a.olt_name;
     </insert>
 
