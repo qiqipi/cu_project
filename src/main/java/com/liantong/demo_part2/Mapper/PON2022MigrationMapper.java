@@ -3,6 +3,7 @@ package com.liantong.demo_part2.Mapper;
 import org.apache.ibatis.annotations.MapKey;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -41,4 +42,8 @@ public interface PON2022MigrationMapper {
     List<Double> getChannel1InPeek(String OLTName,String PONBoard,String PONPort);
 
     void updatePred(String OLTName, String  value, String fieldName, String PONBoard, String PONPort);
+
+    void createStandardOLTChosenTable();
+
+    void insertStandardOLTChosenTable(String oltConcat, String oltName, String ponBoardNumber, String channel1InPeekMax, String channel1InAvgMax, String channel2InPeekMax, String channel2InAvgMax, Date channel1InPeekMaxTime, Date channel2InPeekMaxTime);
 }

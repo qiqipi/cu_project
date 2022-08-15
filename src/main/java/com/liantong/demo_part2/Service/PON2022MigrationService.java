@@ -25,4 +25,5 @@ public interface PON2022MigrationService {
     List<Map<String,Object>> getPlanTable(String[] OLT_name);
 
     double getPredict1(String OLTName, String PONBoard, String PONPort);
+
 }

@@ -90,7 +90,7 @@ public class PON2022MigrationController {
     @ApiOperation(value = "获取PlanTable(表二)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "OLT_names",value = "（必填）OLT_names",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "HPXXL_HW_OLT13,NKHMJ_HW_OLT07"),
-            @ApiImplicitParam(name = "time",value = "（必填）time",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "2022-02-12fafaffd,2022-02-2222fafaffd")
+            @ApiImplicitParam(name = "time",value = "（必填）time",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "2019-02-12fafaffd,2022-02-2222fafaffd")
     })
 
     @ResponseBody

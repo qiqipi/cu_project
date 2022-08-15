@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         double channelInAvgMin2 = Double.MAX_VALUE;
         double channelInPeekPreMax1 = 0;
         double channelInPeekPreMin1 = Integer.MAX_VALUE;
+        int i = 9999;
         for(String OLT_name : OLT_names){
             List<Map<String, Object>> planTables = pon2022MigrationMapper.getPlanTable(OLT_name);
             for(Map<String,Object> planTable : planTables){
@@ -47,6 +49,8 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
                 String  PONPort = (String) planTable.get("pon_port_number");
                 pon2022MigrationMapper.updatePred(OLT_name,"111.9","channel1_in_pred_max",PONBoard,PONPort);
                 pon2022MigrationMapper.updatePred(OLT_name,"112.9","channel2_in_pred_max",PONBoard,PONPort);
+                pon2022MigrationMapper.updatePred(OLT_name,String.valueOf(i),"pon_rank",PONBoard,PONPort);
+                i--;
                 planTable.put("channel1_in_pred_max",111.9);
                 planTable.put("channel1_in_pred_max",112.9);
                 planTable.put("channel1_tendency",1);
@@ -55,35 +59,39 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
 //                planTable.put("channel1_in_pred_max",predict1);
 //                channelInPeekPreMax1 = Math.max(channelInPeekPreMax1,predict1);
 //                channelInPeekPreMin1 = Math.min(channelInPeekPreMin1,predict1);
-//                channelInPeekMax1 = Math.max(channelInPeekMax1,Double.parseDouble((String) planTable.get("channel1_in_peek_max")));
-//                channelInPeekMin1 = Math.min(channelInPeekMin1,Double.parseDouble((String) planTable.get("channel1_in_peek_max")));
-//                channelInAvgMax1 = Math.max(channelInAvgMax1,Double.parseDouble((String) planTable.get("channel1_in_avg_max")));
-//                channelInAvgMin1 = Math.min(channelInAvgMin1,Double.parseDouble((String) planTable.get("channel1_in_avg_max")));
-//                if(planTable.containsKey("channel2_in_peek_max")){
-//                    channelInPeekMax2 = Math.max(channelInPeekMax2,Double.parseDouble((String) planTable.get("channel2_in_peek_max")));
-//                    channelInPeekMin2 = Math.min(channelInPeekMin2,Double.parseDouble((String) planTable.get("channel2_in_peek_max")));
-//                    channelInAvgMax2 = Math.max(channelInAvgMax2,Double.parseDouble((String) planTable.get("channel2_in_avg_max")));
-//                    channelInAvgMin2 = Math.min(channelInAvgMin2,Double.parseDouble((String) planTable.get("channel2_in_avg_max")));
-//                }
+                channelInPeekMax1 = Math.max(channelInPeekMax1,Double.parseDouble((String) planTable.get("channel1_in_peek_max")));
+                channelInPeekMin1 = Math.min(channelInPeekMin1,Double.parseDouble((String) planTable.get("channel1_in_peek_max")));
+                channelInAvgMax1 = Math.max(channelInAvgMax1,Double.parseDouble((String) planTable.get("channel1_in_avg_max")));
+                channelInAvgMin1 = Math.min(channelInAvgMin1,Double.parseDouble((String) planTable.get("channel1_in_avg_max")));
+                if(planTable.containsKey("channel2_in_peek_max")){
+                    channelInPeekMax2 = Math.max(channelInPeekMax2,Double.parseDouble((String) planTable.get("channel2_in_peek_max")));
+                    channelInPeekMin2 = Math.min(channelInPeekMin2,Double.parseDouble((String) planTable.get("channel2_in_peek_max")));
+                    channelInAvgMax2 = Math.max(channelInAvgMax2,Double.parseDouble((String) planTable.get("channel2_in_avg_max")));
+                    channelInAvgMin2 = Math.min(channelInAvgMin2,Double.parseDouble((String) planTable.get("channel2_in_avg_max")));
+                }
                 res.add(planTable);
             }
 
         }
-//        for (Map<String ,Object> planTable : res){
-//            double channel1MaxIn = Double.parseDouble((String) planTable.get("channel1_in_peek_max"));
-//            double channel1AvgIn = Double.parseDouble((String) planTable.get("channel1_in_avg_max"));
+        for (Map<String ,Object> planTable : res){
+            String  channel2_in_peek_max = "";
+            String  channel2_in_avg_max = "";
+            double channel1MaxIn = Double.parseDouble((String) planTable.get("channel1_in_peek_max"));
+            double channel1AvgIn = Double.parseDouble((String) planTable.get("channel1_in_avg_max"));
 //            double channel1PreIn = (double) planTable.get("channel1_in_pred_max");
-//            planTable.put("channel1_in_peek_max",(channel1MaxIn - channelInPeekMin1) / (channelInPeekMax1 - channelInPeekMin1));
-//            planTable.put("channel1_in_avg_max",(channel1AvgIn - channelInAvgMin1) / (channelInAvgMax1 - channelInAvgMin1));
+            double channel1_in_peek_max = (channel1MaxIn - channelInPeekMin1) / (channelInPeekMax1 - channelInPeekMin1);
+            double channel1_in_avg_max = (channel1AvgIn - channelInAvgMin1) / (channelInAvgMax1 - channelInAvgMin1);
 //            planTable.put("channel1_in_pred_max",(channel1PreIn - channelInPeekPreMin1) / (channelInPeekPreMax1 - channelInPeekPreMin1));
-//            if(planTable.containsKey("channel2_in_peek_max")){
-//                double channel2MaxIn = Double.parseDouble((String) planTable.get("channel2_in_peek_max"));
-//                double channel2AvgIn = Double.parseDouble((String) planTable.get("channel2_in_avg_max"));
-//                planTable.put("channel2_in_peek_max",(channel2MaxIn - channelInPeekMin2) / (channelInPeekMax2 - channelInPeekMin2));
-//                planTable.put("channel2_in_avg_max",(channel2AvgIn - channelInAvgMin2) / (channelInAvgMax2 - channelInAvgMin2));
-//            }
-//
-//        }
+            if(planTable.containsKey("channel2_in_peek_max")){
+                double channel2MaxIn = Double.parseDouble((String) planTable.get("channel2_in_peek_max"));
+                double channel2AvgIn = Double.parseDouble((String) planTable.get("channel2_in_avg_max"));
+                channel2_in_peek_max = String.valueOf((channel2MaxIn - channelInPeekMin2) / (channelInPeekMax2 - channelInPeekMin2));
+                channel2_in_avg_max = String.valueOf((channel2AvgIn - channelInAvgMin2) / (channelInAvgMax2 - channelInAvgMin2));
+            }
+            pon2022MigrationMapper.insertStandardOLTChosenTable((String) planTable.get("olt_concat"),(String) planTable.get("olt_name"),(String) planTable.get("pon_board_number"),
+                    String.valueOf(channel1_in_peek_max),String.valueOf(channel1_in_avg_max),channel2_in_peek_max,channel2_in_avg_max,(Date) planTable.get("channel1_in_peek_max_time")
+            ,(Date) planTable.get("channel2_in_peek_max_time"));
+        }
         return res;
     }
 
@@ -129,6 +137,8 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         return Double.parseDouble(str);
     }
 
+
+
     @Override
     public boolean createMergeTable() throws Exception {
         pon2022MigrationMapper.dropMergeTable();
@@ -143,11 +153,12 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         return true;
     }
 
+
     @Override
     public boolean createOLTChosenTable() throws Exception {
 
         pon2022MigrationMapper.createOLTChosenTable();
-            pon2022MigrationMapper.insertOLTChosenTable();
+        pon2022MigrationMapper.insertOLTChosenTable();
         try {
         }catch (Exception e){
             throw new Exception("生成OLTChosen表出错");
@@ -168,6 +179,7 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         String time2 = time[1].substring(0,10);
         pon2022MigrationMapper.createPlanTable();
         pon2022MigrationMapper.insertPlanTable1(time1,time2);
+        pon2022MigrationMapper.createStandardOLTChosenTable();
         try {
         }catch (Exception e){
             throw new Exception("生成PlanTable表出错");
