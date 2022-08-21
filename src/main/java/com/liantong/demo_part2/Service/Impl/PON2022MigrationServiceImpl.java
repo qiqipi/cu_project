@@ -88,11 +88,22 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
                 channel2_in_peek_max = String.valueOf((channel2MaxIn - channelInPeekMin2) / (channelInPeekMax2 - channelInPeekMin2));
                 channel2_in_avg_max = String.valueOf((channel2AvgIn - channelInAvgMin2) / (channelInAvgMax2 - channelInAvgMin2));
             }
-            pon2022MigrationMapper.insertStandardOLTChosenTable((String) planTable.get("olt_concat"),(String) planTable.get("olt_name"),(String) planTable.get("pon_board_number"),
+            pon2022MigrationMapper.insertStandardOLTChosenTable((String) planTable.get("olt_concat"),(String) planTable.get("olt_name"),(String) planTable.get("pon_board_number"),(String)planTable.get("pon_port_number"),
                     String.valueOf(channel1_in_peek_max),String.valueOf(channel1_in_avg_max),channel2_in_peek_max,channel2_in_avg_max,(Date) planTable.get("channel1_in_peek_max_time")
             ,(Date) planTable.get("channel2_in_peek_max_time"));
         }
         return res;
+    }
+
+
+    @Override
+    public List<Map<String, Object>> getRank_table(String values[]){
+        pon2022MigrationMapper.updateStandardOLTChosenTable(values[0],values[1],values[2],values[3]);
+        System.out.println("综合值计算成功");
+
+        List<Map<String, Object>> standardOLTChosenTable = pon2022MigrationMapper.getStandardOLTChosenTable(Integer.valueOf(values[4]));
+        System.out.println(Integer.valueOf(values[4]));
+        return standardOLTChosenTable;
     }
 
     @Override
@@ -136,6 +147,7 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         String  str = String.format("%.2f",s);
         return Double.parseDouble(str);
     }
+
 
 
 
@@ -187,5 +199,7 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         System.out.println("PlanTable完成");
         return true;
     }
+
+
 
 }

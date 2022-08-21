@@ -45,5 +45,9 @@ public interface PON2022MigrationMapper {
 
     void createStandardOLTChosenTable();
 
-    void insertStandardOLTChosenTable(String oltConcat, String oltName, String ponBoardNumber, String channel1InPeekMax, String channel1InAvgMax, String channel2InPeekMax, String channel2InAvgMax, Date channel1InPeekMaxTime, Date channel2InPeekMaxTime);
+    void insertStandardOLTChosenTable(String oltConcat, String oltName, String ponBoardNumber, String ponPortNumber,String channel1InPeekMax, String channel1InAvgMax, String channel2InPeekMax, String channel2InAvgMax, Date channel1InPeekMaxTime, Date channel2InPeekMaxTime);
+
+    void updateStandardOLTChosenTable(String value1,String value2,String value3,String value4);
+
+    List<Map<String ,Object >> getStandardOLTChosenTable(int count);
 }

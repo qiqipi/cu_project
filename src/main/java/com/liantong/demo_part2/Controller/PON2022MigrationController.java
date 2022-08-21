@@ -110,6 +110,21 @@ public class PON2022MigrationController {
         return listResult;
     }
 
+    @RequestMapping(value = "/getRankTable",method = RequestMethod.GET)
+    @ApiOperation(value = "获取排序表(表三)")
+    @ApiImplicitParam(name = "values",value = "(必填)values",paramType = "query",required = true,type = "String",defaultValue = "0.1,0.2,0.3,0.4,5")
+    @ResponseBody
+    public Result getRankTable(@RequestParam String[] values){
+        List<Map<String, Object>> rank_table = null;
+        try {
+            rank_table = pon2022MigrationService.getRank_table(values);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new Result(false,null,"排序失败","404");
+        }
+        return new Result(true,rank_table,"获取数据成功","200");
+    }
+
 
     @RequestMapping(value = "/getTable2Fields",method = RequestMethod.GET)
     @ApiOperation(value = "获取设置权重的字段")

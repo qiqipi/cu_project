@@ -143,34 +143,44 @@
     </update>
 
     <update id="createStandardOLTChosenTable" parameterType="string">
-        DROP  table if EXISTS standard_plan_table;
+        DROP TABLE IF EXISTS standard_plan_table;
         CREATE TABLE standard_plan_table(
                                             id int(11) not null auto_increment COMMENT '字段id',
-                                            olt_concat varchar(255) default null comment 'OLT名称、PON版号、PON口号',
                                             olt_name varchar(255) DEFAULT null COMMENT 'OLT名称',
+                                            olt_concat varchar(255) default null comment 'OLT名称、PON版号、PON口号',
+                                            ip VARCHAR(255) DEFAULT null COMMENT 'OLT管理IP',
                                             pon_board_number VARCHAR(255) DEFAULT null COMMENT 'PON板号',
                                             pon_port_number VARCHAR(255) DEFAULT null COMMENT 'PON口号',
-                                            channel1_in_peek_max VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值最大值',
-                                            channel2_in_peek_max VARCHAR(255) DEFAULT null COMMENT '通道2流入峰值最大值',
-                                            channel1_in_avg_max VARCHAR(255) DEFAULT null COMMENT '通道1均值最大值',
-                                            channel2_in_avg_max VARCHAR(255) DEFAULT null COMMENT '通道2均值最大值',
-                                            channel1_in_pred_max VARCHAR(255) DEFAULT null COMMENT '通道1预测流量最大值',
-                                            channel2_in_pred_max VARCHAR(255) DEFAULT null COMMENT '通道2预测流量最大值',
-                                            channel1_tendency VARCHAR(255) DEFAULT null COMMENT '通道1趋势线',
-                                            channel2_tendency VARCHAR(255) DEFAULT null COMMENT '通道2趋势线',
+                                            channel1_in_peek_max float(5) DEFAULT null COMMENT '通道1流入峰值最大值',
+                                            channel2_in_peek_max float(5) DEFAULT null COMMENT '通道2流入峰值最大值',
+                                            channel1_in_avg_max float(5) DEFAULT null COMMENT '通道1均值最大值',
+                                            channel2_in_avg_max float(5) DEFAULT null COMMENT '通道2均值最大值',
+                                            channel1_in_pred_max float(5) DEFAULT null COMMENT '通道1预测流量最大值',
+                                            channel2_in_pred_max float(5) DEFAULT null COMMENT '通道2预测流量最大值',
+                                            channel1_tendency int(2) DEFAULT null COMMENT '通道1趋势线',
+                                            channel2_tendency int(2) DEFAULT null COMMENT '通道2趋势线',
                                             channel1_in_peek_max_time date DEFAULT null COMMENT '通道1流入峰值最大值采集时间',
                                             channel2_in_peek_max_time date DEFAULT null COMMENT '通道2流入峰值最大值采集时间',
-                                            pon_rank varchar(255) default null comment '排名',
+                                            synthesis_value FLOAT(5) DEFAULT null COMMENT '综合值',
                                             PRIMARY KEY (id),
                                             INDEX (pon_board_number,pon_port_number),
                                             INDEX(olt_name)
         );
-
     </update>
 
     <insert id="insertStandardOLTChosenTable">
-        insert into standard_plan_table(olt_concat,olt_name,pon_port_number,channel1_in_peek_max,channel2_in_peek_max,channel1_in_avg_max,channel2_in_avg_max ,channel1_in_peek_max_time,channel2_in_peek_max_time) values
-        (#{oltConcat},#{oltName},#{ponBoardNumber},#{channel1InPeekMax},#{channel2InAvgMax},#{channel1InAvgMax},#{channel2InAvgMax},#{channel1InPeekMaxTime},#{channel2InPeekMaxTime})
+        insert into standard_plan_table(olt_concat,olt_name,pon_board_number,pon_port_number,channel1_in_peek_max,channel2_in_peek_max,channel1_in_avg_max,channel2_in_avg_max ,channel1_in_peek_max_time,channel2_in_peek_max_time) values
+        (#{oltConcat},#{oltName},#{ponBoardNumber},#{ponPortNumber},#{channel1InPeekMax},#{channel2InAvgMax},#{channel1InAvgMax},#{channel2InAvgMax},#{channel1InPeekMaxTime},#{channel2InPeekMaxTime})
 
     </insert>
+
+    <update id="updateStandardOLTChosenTable">
+        UPDATE standard_plan_table set synthesis_value = channel1_in_peek_max * #{value1} + channel1_in_avg_max * #{value2} + channel2_in_peek_max * #{value3} + channel2_in_peek_max * #{value4};
+    </update>
+
+    <select id="getStandardOLTChosenTable" resultType="java.util.LinkedHashMap">
+        SELECT olt_name,pon_board_number,pon_port_number,synthesis_value from standard_plan_table
+        ORDER BY synthesis_value desc
+        limit #{count};
+    </select>
 </mapper>

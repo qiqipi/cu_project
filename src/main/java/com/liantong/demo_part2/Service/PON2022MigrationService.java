@@ -26,4 +26,5 @@ public interface PON2022MigrationService {
 
     double getPredict1(String OLTName, String PONBoard, String PONPort);
 
+    List<Map<String,Object >> getRank_table(String values[]);
 }
