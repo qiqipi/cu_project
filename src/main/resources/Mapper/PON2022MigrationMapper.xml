@@ -112,6 +112,7 @@
                                    PRIMARY KEY (id),
                                    INDEX (pon_board_number,pon_port_number),
                                    INDEX(olt_name)
+
         );
     </update>
 
