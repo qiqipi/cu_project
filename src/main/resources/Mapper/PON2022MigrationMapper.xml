@@ -109,7 +109,6 @@
                                    channel2_tendency VARCHAR(255) DEFAULT null COMMENT '通道2趋势线',
                                    channel1_in_peek_max_time date DEFAULT null COMMENT '通道1流入峰值最大值采集时间',
                                    channel2_in_peek_max_time date DEFAULT null COMMENT '通道2流入峰值最大值采集时间',
-                                   pon_rank varchar(255) default null comment '排名',
                                    PRIMARY KEY (id),
                                    INDEX (pon_board_number,pon_port_number),
                                    INDEX(olt_name)
@@ -179,8 +178,7 @@
     </update>
 
     <select id="getStandardOLTChosenTable" resultType="java.util.LinkedHashMap">
-        SELECT olt_name,pon_board_number,pon_port_number,synthesis_value from standard_plan_table
-        ORDER BY synthesis_value desc
-        limit #{count};
+        select * from plan_table a LEFT JOIN (SELECT olt_concat,synthesis_value from standard_plan_table) b on a.olt_concat = b.olt_concat
+        order by  synthesis_value DESC;
     </select>
 </mapper>

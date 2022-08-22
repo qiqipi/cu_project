@@ -49,5 +49,5 @@ public interface PON2022MigrationMapper {
 
     void updateStandardOLTChosenTable(String value1,String value2,String value3,String value4);
 
-    List<Map<String ,Object >> getStandardOLTChosenTable(int count);
+    List<Map<String ,Object >> getStandardOLTChosenTable();
 }

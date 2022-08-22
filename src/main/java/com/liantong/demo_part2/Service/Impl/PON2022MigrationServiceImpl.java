@@ -41,7 +41,6 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         double channelInAvgMin2 = Double.MAX_VALUE;
         double channelInPeekPreMax1 = 0;
         double channelInPeekPreMin1 = Integer.MAX_VALUE;
-        int i = 9999;
         for(String OLT_name : OLT_names){
             List<Map<String, Object>> planTables = pon2022MigrationMapper.getPlanTable(OLT_name);
             for(Map<String,Object> planTable : planTables){
@@ -49,8 +48,6 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
                 String  PONPort = (String) planTable.get("pon_port_number");
                 pon2022MigrationMapper.updatePred(OLT_name,"111.9","channel1_in_pred_max",PONBoard,PONPort);
                 pon2022MigrationMapper.updatePred(OLT_name,"112.9","channel2_in_pred_max",PONBoard,PONPort);
-                pon2022MigrationMapper.updatePred(OLT_name,String.valueOf(i),"pon_rank",PONBoard,PONPort);
-                i--;
                 planTable.put("channel1_in_pred_max",111.9);
                 planTable.put("channel1_in_pred_max",112.9);
                 planTable.put("channel1_tendency",1);
@@ -101,8 +98,7 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         pon2022MigrationMapper.updateStandardOLTChosenTable(values[0],values[1],values[2],values[3]);
         System.out.println("综合值计算成功");
 
-        List<Map<String, Object>> standardOLTChosenTable = pon2022MigrationMapper.getStandardOLTChosenTable(Integer.valueOf(values[4]));
-        System.out.println(Integer.valueOf(values[4]));
+        List<Map<String, Object>> standardOLTChosenTable = pon2022MigrationMapper.getStandardOLTChosenTable();
         return standardOLTChosenTable;
     }
 
