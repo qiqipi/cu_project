@@ -140,6 +140,21 @@ public class PON2022MigrationController {
         return new Result(true,migrationTable,"获取数据成功","200");
     }
 
+    @RequestMapping(value = "/getNoMigrationTable",method = RequestMethod.GET)
+    @ApiImplicitParam(name = "values",value = "(必填)values",paramType = "query",required = true,type = "String",defaultValue = "18,6,14,8,16")
+    @ResponseBody
+    @ApiOperation(value = "获取需要迁移的PON")
+    public Result getNoMigrationTable(@RequestParam String[] values){
+        List<Map<String ,Object>> noMigrationTable = null;
+        try {
+            noMigrationTable = pon2022MigrationService.getNoMigrationTable(values);
+        }catch (Exception e){
+            System.out.println(e);
+            return new Result(false,null,"排序失败","404");
+        }
+        return new Result(true,noMigrationTable,"获取数据成功","200");
+    }
+
     @RequestMapping(value = "/getTable2Fields",method = RequestMethod.GET)
     @ApiOperation(value = "获取设置权重的字段")
     @ResponseBody

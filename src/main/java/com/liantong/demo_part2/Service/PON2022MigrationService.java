@@ -30,4 +30,5 @@ public interface PON2022MigrationService {
 
     List<Map<String,Object>> getMigrationTable(String values[]);
 
+    List<Map<String,Object>> getNoMigrationTable(String values[]);
 }
