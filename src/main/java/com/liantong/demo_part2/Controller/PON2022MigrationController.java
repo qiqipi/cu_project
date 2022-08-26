@@ -112,7 +112,7 @@ public class PON2022MigrationController {
 
     @RequestMapping(value = "/getRankTable",method = RequestMethod.GET)
     @ApiOperation(value = "获取排序表(表三)")
-    @ApiImplicitParam(name = "values",value = "(必填)values",paramType = "query",required = true,type = "String",defaultValue = "0.1,0.2,0.3,0.4,5")
+    @ApiImplicitParam(name = "values",value = "(必填)values",paramType = "query",required = true,type = "String",defaultValue = "0.1,0.2,0.3,0.4")
     @ResponseBody
     public Result getRankTable(@RequestParam String[] values){
         List<Map<String, Object>> rank_table = null;
@@ -125,6 +125,20 @@ public class PON2022MigrationController {
         return new Result(true,rank_table,"获取数据成功","200");
     }
 
+    @RequestMapping(value = "/getMigrationTable",method = RequestMethod.GET)
+    @ApiImplicitParam(name = "values",value = "(必填)values",paramType = "query",required = true,type = "String",defaultValue = "18,6,14,8,16")
+    @ResponseBody
+    @ApiOperation(value = "获取迁移结果")
+    public Result getMigrationTable(@RequestParam String[] values){
+        List<Map<String ,Object>> migrationTable = null;
+        try {
+            migrationTable = pon2022MigrationService.getMigrationTable(values);
+        }catch (Exception e){
+            System.out.println(e);
+            return new Result(false,null,"排序失败","404");
+        }
+        return new Result(true,migrationTable,"获取数据成功","200");
+    }
 
     @RequestMapping(value = "/getTable2Fields",method = RequestMethod.GET)
     @ApiOperation(value = "获取设置权重的字段")

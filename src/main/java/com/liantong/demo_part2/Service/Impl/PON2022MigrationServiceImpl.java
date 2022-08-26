@@ -103,6 +103,18 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
     }
 
     @Override
+    public List<Map<String, Object>> getMigrationTable(String[] values) {
+        List<Map<String,Object>> res = new ArrayList<>();
+        for(String value : values){
+            Map<String, Object> migrationTable = pon2022MigrationMapper.getMigrationTable(value);
+            migrationTable.put("result","待定");
+            res.add(migrationTable);
+        }
+
+        return res;
+    }
+
+    @Override
     public double getPredict1(String OLTName, String PONBoard, String PONPort) {
         List<Double> list = pon2022MigrationMapper.getChannel1InPeek(OLTName,PONBoard,PONPort);
         double [] data = new double[list.size()];
