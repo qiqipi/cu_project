@@ -105,25 +105,65 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
     @Override
     public List<Map<String, Object>> getMigrationTable(String[] values) {
         List<Map<String,Object>> res = new ArrayList<>();
+        double door = 0.5;
         for(String value : values){
             Map<String, Object> migrationTable = pon2022MigrationMapper.getMigrationTable(value);
-            migrationTable.put("result","待定");
+            String tech = (String) migrationTable.get("technical");
+            double flow1 = Double.parseDouble((String) migrationTable.getOrDefault("channel1_in_peek_max","0")) / 1000;
+            double flow2 = Double.parseDouble((String) migrationTable.getOrDefault("channel2_in_peek_max","0")) / 1000;
+            if(tech.equals("EPON")){
+                migrationTable.put("result","GPON");
+            }
+            if(tech.equals("GPON")){
+                if(flow1 > door * 2500){
+                    migrationTable.put("result","用户分裂");
+                }else{
+                    migrationTable.put("result","不变");
+                }
+            }
+            if(tech.equals("XG PON") || tech.equals("XGS PON")){
+                if(flow1 > door * 10000){
+                    migrationTable.put("result","用户分裂");
+                }else{
+                    migrationTable.put("result","不变");
+                }
+            }
+            if(tech.equals("10G EPON")){
+                if(flow1 > 750 && flow2 > 10000 * door){
+                    migrationTable.put("result","通道1迁移到通道2，用户分裂");
+                }
+                if(flow1 > 750 && flow2 < 10000 * door){
+                    migrationTable.put("result","通道1迁移到通道2");
+                }
+                if(flow1 < 750 && flow2 > 10000 * door){
+                    migrationTable.put("result","用户分裂");
+                }
+                if(flow1 < 750 && flow2 < 10000 * door){
+                    migrationTable.put("result","不变");
+                }
+            }
+            if(tech.equals("Combo PON(XG-PON)") || tech.equals("Combo PON(XGS PON)")){
+                if(flow1 > 750 && flow2 > 10000 * door){
+                    migrationTable.put("result","通道1迁移到通道2，用户分裂");
+                }
+                if(flow1 > 750 && flow2 < 10000 * door){
+                    migrationTable.put("result","通道1迁移到通道2");
+                }
+                if(flow1 < 750 && flow2 > 10000 * door){
+                    migrationTable.put("result","用户分裂");
+                }
+                if(flow1 < 750 && flow2 < 10000 * door){
+                    migrationTable.put("result","不变");
+                }
+            }
+            migrationTable.remove("channel1_in_peek_max");
+            migrationTable.remove("channel2_in_peek_max");
             res.add(migrationTable);
         }
 
         return res;
     }
 
-    @Override
-    public List<Map<String, Object>> getNoMigrationTable(String[] values) {
-        List<Map<String,Object>> res = new ArrayList<>();
-        for(String value : values){
-            Map<String, Object> migrationTable = pon2022MigrationMapper.getMigrationTable(value);
-            res.add(migrationTable);
-        }
-
-        return res;
-    }
 
     @Override
     public double getPredict1(String OLTName, String PONBoard, String PONPort) {

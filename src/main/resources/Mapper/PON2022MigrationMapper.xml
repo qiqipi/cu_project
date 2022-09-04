@@ -184,6 +184,6 @@
     </select>
 
     <select id="getMigrationTable" resultType="java.util.LinkedHashMap">
-        select id,olt_name,pon_port_number,pon_board_number,technical from plan_table where id = #{id};
+        select id,olt_name,pon_port_number,pon_board_number,technical,channel1_in_peek_max,channel2_in_peek_max from plan_table where id = #{id};
     </select>
 </mapper>
