@@ -109,8 +109,8 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         for(String value : values){
             Map<String, Object> migrationTable = pon2022MigrationMapper.getMigrationTable(value);
             String tech = (String) migrationTable.get("technical");
-            double flow1 = Double.parseDouble((String) migrationTable.getOrDefault("channel1_in_peek_max","0")) / 1000;
-            double flow2 = Double.parseDouble((String) migrationTable.getOrDefault("channel2_in_peek_max","0")) / 1000;
+            double flow1 = Double.parseDouble((String) migrationTable.getOrDefault("channel1_in_peek_max","0")) / 1000000;
+            double flow2 = Double.parseDouble((String) migrationTable.getOrDefault("channel2_in_peek_max","0")) / 1000000;
             if(tech.equals("EPON")){
                 migrationTable.put("result","GPON");
             }
