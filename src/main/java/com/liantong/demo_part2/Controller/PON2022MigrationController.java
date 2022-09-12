@@ -89,7 +89,7 @@ public class PON2022MigrationController {
     @RequestMapping(value = "/getPlanTable",method = RequestMethod.GET)
     @ApiOperation(value = "获取PlanTable(表二)")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "OLT_names",value = "（必填）OLT_names",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "HPXXL_HW_OLT13,NKHMJ_HW_OLT07"),
+            @ApiImplicitParam(name = "OLT_names",value = "（必填）OLT_names",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "HPXXL_HW_OLT01,HPXXL_HW_OLT02,NKBCB_HW_OLT01,NKBCB_HW_OLT02"),
             @ApiImplicitParam(name = "time",value = "（必填）time",paramType = "query",required = true,type = "String",allowMultiple = true,defaultValue = "2019-02-12fafaffd,2022-02-2222fafaffd")
     })
 
@@ -152,8 +152,6 @@ public class PON2022MigrationController {
         s[3] = "通道2均值最大值";
         s[4] = "通道1预测流量最大值";
         s[5] = "通道2预测流量最大值";
-        s[6] = "通道1趋势线";
-        s[7] = "通道2趋势线";
         return s;
     }
 

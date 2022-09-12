@@ -71,8 +71,8 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
 
         }
         for (Map<String ,Object> planTable : res){
-            String  channel2_in_peek_max = "";
-            String  channel2_in_avg_max = "";
+            String  channel2_in_peek_max = "0";
+            String  channel2_in_avg_max = "0";
             double channel1MaxIn = Double.parseDouble((String) planTable.get("channel1_in_peek_max"));
             double channel1AvgIn = Double.parseDouble((String) planTable.get("channel1_in_avg_max"));
 //            double channel1PreIn = (double) planTable.get("channel1_in_pred_max");
@@ -109,8 +109,8 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         for(String value : values){
             Map<String, Object> migrationTable = pon2022MigrationMapper.getMigrationTable(value);
             String tech = (String) migrationTable.get("technical");
-            double flow1 = Double.parseDouble((String) migrationTable.getOrDefault("channel1_in_peek_max","0")) / 1000000;
-            double flow2 = Double.parseDouble((String) migrationTable.getOrDefault("channel2_in_peek_max","0")) / 1000000;
+            double flow1 = Double.parseDouble((String) migrationTable.getOrDefault("channel1_in_peek_max","0")) / 1000;
+            double flow2 = Double.parseDouble((String) migrationTable.getOrDefault("channel2_in_peek_max","0")) / 1000;
             if(tech.equals("EPON")){
                 migrationTable.put("result","GPON");
             }
@@ -215,7 +215,7 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         pon2022MigrationMapper.dropMergeTable();
         pon2022MigrationMapper.createMergeTable();
         pon2022MigrationMapper.initMergeTable();
-
+        pon2022MigrationMapper.createCoList();
         try {
         }catch (Exception e){
             throw new Exception("生成merge表出错");

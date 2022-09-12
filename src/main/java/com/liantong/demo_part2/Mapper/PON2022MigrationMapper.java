@@ -52,4 +52,6 @@ public interface PON2022MigrationMapper {
     List<Map<String ,Object >> getStandardOLTChosenTable();
 
     Map<String ,Object> getMigrationTable(String id);
+
+    void createCoList();
 }
