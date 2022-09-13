@@ -66,6 +66,9 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
                     channelInAvgMax2 = Math.max(channelInAvgMax2,Double.parseDouble((String) planTable.get("channel2_in_avg_max")));
                     channelInAvgMin2 = Math.min(channelInAvgMin2,Double.parseDouble((String) planTable.get("channel2_in_avg_max")));
                 }
+//                planTable.remove("channel1_in_peek_max_time");
+//                planTable.put("channel1_in_peek_max_time",planTable.get("channel1_time"));
+
                 res.add(planTable);
             }
 
@@ -86,8 +89,8 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
                 channel2_in_avg_max = String.valueOf((channel2AvgIn - channelInAvgMin2) / (channelInAvgMax2 - channelInAvgMin2));
             }
             pon2022MigrationMapper.insertStandardOLTChosenTable((String) planTable.get("olt_concat"),(String) planTable.get("olt_name"),(String) planTable.get("pon_board_number"),(String)planTable.get("pon_port_number"),
-                    String.valueOf(channel1_in_peek_max),String.valueOf(channel1_in_avg_max),channel2_in_peek_max,channel2_in_avg_max,(Date) planTable.get("channel1_in_peek_max_time")
-            ,(Date) planTable.get("channel2_in_peek_max_time"));
+                    String.valueOf(channel1_in_peek_max),String.valueOf(channel1_in_avg_max),channel2_in_peek_max,channel2_in_avg_max,(String)planTable.get("channel1_in_peek_max_time")
+            ,(String) planTable.get("channel2_in_peek_max_time"));
         }
         return res;
     }
@@ -142,7 +145,7 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
                     migrationTable.put("result","不变");
                 }
             }
-            if(tech.equals("Combo PON(XG-PON)") || tech.equals("Combo PON(XGS PON)")){
+            if(tech.equals("Combo PON(XG PON)") || tech.equals("Combo PON(XGS PON)")){
                 if(flow1 > 750 && flow2 > 10000 * door){
                     migrationTable.put("result","通道1迁移到通道2，用户分裂");
                 }

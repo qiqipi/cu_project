@@ -122,8 +122,8 @@
                                    channel2_in_pred_max VARCHAR(255) DEFAULT null COMMENT '通道2预测流量最大值',
                                    channel1_tendency VARCHAR(255) DEFAULT null COMMENT '通道1趋势线',
                                    channel2_tendency VARCHAR(255) DEFAULT null COMMENT '通道2趋势线',
-                                   channel1_in_peek_max_time date DEFAULT null COMMENT '通道1流入峰值最大值采集时间',
-                                   channel2_in_peek_max_time date DEFAULT null COMMENT '通道2流入峰值最大值采集时间',
+                                   channel1_in_peek_max_time VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值最大值采集时间',
+                                   channel2_in_peek_max_time VARCHAR(255) DEFAULT null COMMENT '通道2流入峰值最大值采集时间',
                                    PRIMARY KEY (id),
                                    INDEX (pon_board_number,pon_port_number),
                                    INDEX(olt_name)
@@ -141,7 +141,7 @@
     </insert>
 
     <select id="getPlanTable" resultType="java.util.LinkedHashMap">
-        select id,olt_concat,olt_name,technical,pon_board_number,pon_port_number,channel1_in_peek_max,channel1_in_avg_max,channel2_in_peek_max,channel2_in_avg_max ,DATE_FORMAT(channel1_in_peek_max_time,'%Y-%m-%d %H-%i-%s') channel1_time,DATE_FORMAT(channel2_in_peek_max_time,'%Y-%m-%d %H-%i-%s') channel2_time from plan_table where olt_name = #{OLT_name};
+        select id,olt_concat,olt_name,technical,pon_board_number,pon_port_number,channel1_in_peek_max,channel1_in_avg_max,channel2_in_peek_max,channel2_in_avg_max ,DATE_FORMAT(channel1_in_peek_max_time,'%Y-%m-%d %H-%i-%s') as channel1_in_peek_max_time,DATE_FORMAT(channel2_in_peek_max_time,'%Y-%m-%d %H-%i-%s') channel2_time from plan_table where olt_name = #{OLT_name};
     </select>
 
 
