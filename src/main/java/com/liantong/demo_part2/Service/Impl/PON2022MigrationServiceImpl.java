@@ -46,51 +46,51 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
             for(Map<String,Object> planTable : planTables){
                 String  PONBoard = (String) planTable.get("pon_board_number");
                 String  PONPort = (String) planTable.get("pon_port_number");
-                pon2022MigrationMapper.updatePred(OLT_name,"111.9","channel1_in_pred_max",PONBoard,PONPort);
-                pon2022MigrationMapper.updatePred(OLT_name,"112.9","channel2_in_pred_max",PONBoard,PONPort);
-                planTable.put("channel1_in_pred_max",111.9);
-                planTable.put("channel1_in_pred_max",112.9);
+                pon2022MigrationMapper.updatePred(OLT_name,"111.9","channel1_out_pred_max",PONBoard,PONPort);
+                pon2022MigrationMapper.updatePred(OLT_name,"112.9","channel2_out_pred_max",PONBoard,PONPort);
+                planTable.put("channel1_out_pred_max",111.9);
+                planTable.put("channel1_out_pred_max",112.9);
                 planTable.put("channel1_tendency",1);
                 planTable.put("channel2_tendency",0);
 //                double predict1 = getPredict1(OLT_name, PONBoard, PONPort);
-//                planTable.put("channel1_in_pred_max",predict1);
+//                planTable.put("channel1_out_pred_max",predict1);
 //                channelInPeekPreMax1 = Math.max(channelInPeekPreMax1,predict1);
 //                channelInPeekPreMin1 = Math.min(channelInPeekPreMin1,predict1);
-                channelInPeekMax1 = Math.max(channelInPeekMax1,Double.parseDouble((String) planTable.get("channel1_in_peek_max")));
-                channelInPeekMin1 = Math.min(channelInPeekMin1,Double.parseDouble((String) planTable.get("channel1_in_peek_max")));
-                channelInAvgMax1 = Math.max(channelInAvgMax1,Double.parseDouble((String) planTable.get("channel1_in_avg_max")));
-                channelInAvgMin1 = Math.min(channelInAvgMin1,Double.parseDouble((String) planTable.get("channel1_in_avg_max")));
-                if(planTable.containsKey("channel2_in_peek_max")){
-                    channelInPeekMax2 = Math.max(channelInPeekMax2,Double.parseDouble((String) planTable.get("channel2_in_peek_max")));
-                    channelInPeekMin2 = Math.min(channelInPeekMin2,Double.parseDouble((String) planTable.get("channel2_in_peek_max")));
-                    channelInAvgMax2 = Math.max(channelInAvgMax2,Double.parseDouble((String) planTable.get("channel2_in_avg_max")));
-                    channelInAvgMin2 = Math.min(channelInAvgMin2,Double.parseDouble((String) planTable.get("channel2_in_avg_max")));
+                channelInPeekMax1 = Math.max(channelInPeekMax1,Double.parseDouble((String) planTable.get("channel1_out_peek_max")));
+                channelInPeekMin1 = Math.min(channelInPeekMin1,Double.parseDouble((String) planTable.get("channel1_out_peek_max")));
+                channelInAvgMax1 = Math.max(channelInAvgMax1,Double.parseDouble((String) planTable.get("channel1_out_avg_max")));
+                channelInAvgMin1 = Math.min(channelInAvgMin1,Double.parseDouble((String) planTable.get("channel1_out_avg_max")));
+                if(planTable.containsKey("channel2_out_peek_max")){
+                    channelInPeekMax2 = Math.max(channelInPeekMax2,Double.parseDouble((String) planTable.get("channel2_out_peek_max")));
+                    channelInPeekMin2 = Math.min(channelInPeekMin2,Double.parseDouble((String) planTable.get("channel2_out_peek_max")));
+                    channelInAvgMax2 = Math.max(channelInAvgMax2,Double.parseDouble((String) planTable.get("channel2_out_avg_max")));
+                    channelInAvgMin2 = Math.min(channelInAvgMin2,Double.parseDouble((String) planTable.get("channel2_out_avg_max")));
                 }
-//                planTable.remove("channel1_in_peek_max_time");
-//                planTable.put("channel1_in_peek_max_time",planTable.get("channel1_time"));
+//                planTable.remove("channel1_out_peek_max_time");
+//                planTable.put("channel1_out_peek_max_time",planTable.get("channel1_time"));
 
                 res.add(planTable);
             }
 
         }
         for (Map<String ,Object> planTable : res){
-            String  channel2_in_peek_max = "0";
-            String  channel2_in_avg_max = "0";
-            double channel1MaxIn = Double.parseDouble((String) planTable.get("channel1_in_peek_max"));
-            double channel1AvgIn = Double.parseDouble((String) planTable.get("channel1_in_avg_max"));
-//            double channel1PreIn = (double) planTable.get("channel1_in_pred_max");
-            double channel1_in_peek_max = (channel1MaxIn - channelInPeekMin1) / (channelInPeekMax1 - channelInPeekMin1);
-            double channel1_in_avg_max = (channel1AvgIn - channelInAvgMin1) / (channelInAvgMax1 - channelInAvgMin1);
-//            planTable.put("channel1_in_pred_max",(channel1PreIn - channelInPeekPreMin1) / (channelInPeekPreMax1 - channelInPeekPreMin1));
-            if(planTable.containsKey("channel2_in_peek_max")){
-                double channel2MaxIn = Double.parseDouble((String) planTable.get("channel2_in_peek_max"));
-                double channel2AvgIn = Double.parseDouble((String) planTable.get("channel2_in_avg_max"));
-                channel2_in_peek_max = String.valueOf((channel2MaxIn - channelInPeekMin2) / (channelInPeekMax2 - channelInPeekMin2));
-                channel2_in_avg_max = String.valueOf((channel2AvgIn - channelInAvgMin2) / (channelInAvgMax2 - channelInAvgMin2));
+            String  channel2_out_peek_max = "0";
+            String  channel2_out_avg_max = "0";
+            double channel1MaxIn = Double.parseDouble((String) planTable.get("channel1_out_peek_max"));
+            double channel1AvgIn = Double.parseDouble((String) planTable.get("channel1_out_avg_max"));
+//            double channel1PreIn = (double) planTable.get("channel1_out_pred_max");
+            double channel1_out_peek_max = (channel1MaxIn - channelInPeekMin1) / (channelInPeekMax1 - channelInPeekMin1);
+            double channel1_out_avg_max = (channel1AvgIn - channelInAvgMin1) / (channelInAvgMax1 - channelInAvgMin1);
+//            planTable.put("channel1_out_pred_max",(channel1PreIn - channelInPeekPreMin1) / (channelInPeekPreMax1 - channelInPeekPreMin1));
+            if(planTable.containsKey("channel2_out_peek_max")){
+                double channel2MaxIn = Double.parseDouble((String) planTable.get("channel2_out_peek_max"));
+                double channel2AvgIn = Double.parseDouble((String) planTable.get("channel2_out_avg_max"));
+                channel2_out_peek_max = String.valueOf((channel2MaxIn - channelInPeekMin2) / (channelInPeekMax2 - channelInPeekMin2));
+                channel2_out_avg_max = String.valueOf((channel2AvgIn - channelInAvgMin2) / (channelInAvgMax2 - channelInAvgMin2));
             }
             pon2022MigrationMapper.insertStandardOLTChosenTable((String) planTable.get("olt_concat"),(String) planTable.get("olt_name"),(String) planTable.get("pon_board_number"),(String)planTable.get("pon_port_number"),
-                    String.valueOf(channel1_in_peek_max),String.valueOf(channel1_in_avg_max),channel2_in_peek_max,channel2_in_avg_max,(String)planTable.get("channel1_in_peek_max_time")
-            ,(String) planTable.get("channel2_in_peek_max_time"));
+                    String.valueOf(channel1_out_peek_max),String.valueOf(channel1_out_avg_max),channel2_out_peek_max,channel2_out_avg_max,(String)planTable.get("channel1_out_peek_max_time")
+            ,(String) planTable.get("channel2_out_peek_max_time"));
         }
         return res;
     }
@@ -108,21 +108,18 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
     @Override
     public List<Map<String, Object>> getMigrationTable(String[] values) {
         List<Map<String,Object>> res = new ArrayList<>();
-        double door = 0.5;
+        double door = 0.3;
+        double door1 = 0.1;
         for(String value : values){
             Map<String, Object> migrationTable = pon2022MigrationMapper.getMigrationTable(value);
             String tech = (String) migrationTable.get("technical");
-            double flow1 = Double.parseDouble((String) migrationTable.getOrDefault("channel1_in_peek_max","0")) / 1000;
-            double flow2 = Double.parseDouble((String) migrationTable.getOrDefault("channel2_in_peek_max","0")) / 1000;
+            double flow1 = Double.parseDouble((String) migrationTable.getOrDefault("channel1_out_peek_max","0")) * 5;
+            double flow2 = Double.parseDouble((String) migrationTable.getOrDefault("channel2_out_peek_max","0")) * 5;
             if(tech.equals("EPON")){
-                migrationTable.put("result","GPON");
+                migrationTable.put("result","PON升级至10G EPON，提示用户升级");
             }
             if(tech.equals("GPON")){
-                if(flow1 > door * 2500){
-                    migrationTable.put("result","用户分裂");
-                }else{
-                    migrationTable.put("result","不变");
-                }
+                migrationTable.put("result","PON升级至Combo PON，提示用户升级");
             }
             if(tech.equals("XG PON") || tech.equals("XGS PON")){
                 if(flow1 > door * 10000){
@@ -132,35 +129,35 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
                 }
             }
             if(tech.equals("10G EPON")){
-                if(flow1 > 750 && flow2 > 10000 * door){
+                if(flow1 > 2500 * door1 && flow2 > 10000 * door){
                     migrationTable.put("result","通道1迁移到通道2，用户分裂");
                 }
-                if(flow1 > 750 && flow2 < 10000 * door){
+                if(flow1 > 2500 * door1 && flow2 < 10000 * door){
                     migrationTable.put("result","通道1迁移到通道2");
                 }
-                if(flow1 < 750 && flow2 > 10000 * door){
+                if(flow1 < 2500 * door1 && flow2 > 10000 * door){
                     migrationTable.put("result","用户分裂");
                 }
-                if(flow1 < 750 && flow2 < 10000 * door){
+                if(flow1 < 2500 * door1 && flow2 < 10000 * door){
                     migrationTable.put("result","不变");
                 }
             }
             if(tech.equals("Combo PON(XG PON)") || tech.equals("Combo PON(XGS PON)")){
-                if(flow1 > 750 && flow2 > 10000 * door){
+                if(flow1 > 2500 * door1 && flow2 > 10000 * door){
                     migrationTable.put("result","通道1迁移到通道2，用户分裂");
                 }
-                if(flow1 > 750 && flow2 < 10000 * door){
+                if(flow1 > 2500 * door1&& flow2 < 10000 * door){
                     migrationTable.put("result","通道1迁移到通道2");
                 }
-                if(flow1 < 750 && flow2 > 10000 * door){
+                if(flow1 < 2500 * door1 && flow2 > 10000 * door){
                     migrationTable.put("result","用户分裂");
                 }
-                if(flow1 < 750 && flow2 < 10000 * door){
+                if(flow1 < 2500 * door1 && flow2 < 10000 * door){
                     migrationTable.put("result","不变");
                 }
             }
-            migrationTable.remove("channel1_in_peek_max");
-            migrationTable.remove("channel2_in_peek_max");
+            migrationTable.remove("channel1_out_peek_max");
+            migrationTable.remove("channel2_out_peek_max");
             res.add(migrationTable);
         }
 

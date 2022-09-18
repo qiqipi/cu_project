@@ -22,24 +22,24 @@
                                     machine_type VARCHAR(255) DEFAULT null COMMENT '设备类型',
                                     technical VARCHAR(255) DEFAULT null COMMENT '技术制式',
                                     out_band VARCHAR(255) DEFAULT null COMMENT '流出带宽',
-                                    in_band VARCHAR(255) DEFAULT null COMMENT '流入带宽',
-                                    all_in_peek VARCHAR(255) DEFAULT null COMMENT '流入峰值',
-                                    all_in_peek_usage VARCHAR(255) DEFAULT null COMMENT '流入峰值利用率',
-                                    all_in_avg VARCHAR(255) DEFAULT null COMMENT '流入均值',
-                                    all_in_peek_avg VARCHAR(255) DEFAULT null COMMENT '流入均值利用率',
-                                    channel1_in_peek VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值',
-                                    channel1_in_peek_usage VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值利用率',
-                                    channel1_in_avg VARCHAR(255) DEFAULT null COMMENT '通道1流入均值',
-                                    channel1_in_peek_avg VARCHAR(255) DEFAULT null COMMENT '通道1流入均值利用率',
-                                    channel2_in_peek VARCHAR(255) DEFAULT null COMMENT '通道2流入峰值',
-                                    channel2_in_peek_usage VARCHAR(255) DEFAULT null COMMENT '通道2流入峰值利用率',
-                                    channel2_in_avg VARCHAR(255) DEFAULT null COMMENT '通道2流入均值',
-                                    channel2_in_peek_avg VARCHAR(255) DEFAULT null COMMENT '通道2流入均值利用率',
+                                    in_band VARCHAR(255) DEFAULT null COMMENT '流出带宽',
+                                    all_out_peek VARCHAR(255) DEFAULT null COMMENT '流出峰值',
+                                    all_out_peek_usage VARCHAR(255) DEFAULT null COMMENT '流出峰值利用率',
+                                    all_out_avg VARCHAR(255) DEFAULT null COMMENT '流出均值',
+                                    all_out_peek_avg VARCHAR(255) DEFAULT null COMMENT '流出均值利用率',
+                                    channel1_out_peek VARCHAR(255) DEFAULT null COMMENT '通道1流出峰值',
+                                    channel1_out_peek_usage VARCHAR(255) DEFAULT null COMMENT '通道1流出峰值利用率',
+                                    channel1_out_avg VARCHAR(255) DEFAULT null COMMENT '通道1流出均值',
+                                    channel1_out_peek_avg VARCHAR(255) DEFAULT null COMMENT '通道1流出均值利用率',
+                                    channel2_out_peek VARCHAR(255) DEFAULT null COMMENT '通道2流出峰值',
+                                    channel2_out_peek_usage VARCHAR(255) DEFAULT null COMMENT '通道2流出峰值利用率',
+                                    channel2_out_avg VARCHAR(255) DEFAULT null COMMENT '通道2流出均值',
+                                    channel2_out_peek_avg VARCHAR(255) DEFAULT null COMMENT '通道2流出均值利用率',
                                     pon_board_number VARCHAR(255) DEFAULT null COMMENT 'PON板号',
                                     pon_port_number VARCHAR(255) DEFAULT null COMMENT 'PON口号',
                                     account VARCHAR(255) DEFAULT null COMMENT '上网账号',
-                                    channel1_in_peek_time date DEFAULT null COMMENT '通道1流入峰值采集时间',
-                                    channel2_in_peek_time date DEFAULT null COMMENT '通道2流入峰值采集时间',
+                                    channel1_out_peek_time datetime DEFAULT null COMMENT '通道1流出峰值采集时间',
+                                    channel2_out_peek_time datetime DEFAULT null COMMENT '通道2流出峰值采集时间',
                                     PRIMARY key (id)
         );
     </update>
@@ -59,8 +59,8 @@
 
 
     <insert id="initMergeTable" parameterType="string">
-        INSERT into merge_table (olt_name,station,company,ip,machine_type,technical,out_band,in_band,all_in_peek,all_in_avg,channel1_in_peek,channel1_in_avg,channel2_in_peek,channel2_in_avg,pon_board_number,pon_port_number,account,channel1_in_peek_time,channel2_in_peek_time)
-        SELECT `网元名称` olt_name,分局 station,分公司 company,OLT管理IP ip,设备类型 machine_type,技术制式,流出方向带宽,流入方向带宽,流入峰值,流入均值,通道1流入峰值 channel1_in_peek,通道1流入均值 channel1_in_avg,通道2流入峰值 channel2_in_peek,通道2流入均值 channel2_in_avg,PON板号 pon_board_number,PON口号 pon_port_number,上网账号 account,通道1流入峰值采集时间 channel1_in_peek_time,通道2流入峰值采集时间 channel2_in_peek_time
+        INSERT into merge_table (olt_name,station,company,ip,machine_type,technical,out_band,in_band,all_out_peek,all_out_avg,channel1_out_peek,channel1_out_avg,channel2_out_peek,channel2_out_avg,pon_board_number,pon_port_number,account,channel1_out_peek_time,channel2_out_peek_time)
+        SELECT `网元名称` olt_name,分局 station,分公司 company,OLT管理IP ip,设备类型 machine_type,技术制式,流出方向带宽,流出方向带宽,流出峰值,流出均值,通道1流出峰值 channel1_out_peek,通道1流出均值 channel1_out_avg,通道2流出峰值 channel2_out_peek,通道2流出均值 channel2_out_avg,PON板号 pon_board_number,PON口号 pon_port_number,上网账号 account,通道1流出峰值采集时间 channel1_out_peek_time,通道2流出峰值采集时间 channel2_out_peek_time
         FROM new_line_null a LEFT JOIN new_pon_traffic_null b on a.OLT端口号 = b.`PON口号` and a.`OLT槽位号` = b.`PON板号` and a.OLT = b.`网元名称`;
         delete from merge_table where olt_name is null;
 </insert>
@@ -89,7 +89,7 @@
     </update>
 
     <insert id="insertOLTChosenTable" parameterType="string">
-        set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+        set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_in_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
         INSERT INTO OLT_chosen(station,company,olt_name,ip,epon_num,gpon_num,10g_pon_num,xg_pon_num,xgs_pon_num,combo_xg_pon_num,combo_xgs_pon_num,olt_sum)
         SELECT station,company,olt_name,ip,SUM(IF(technical='EPON',1,0)) gpon_num,SUM(IF(technical='GPON',1,0)) epon_num,SUM(IF(technical='10G EPON',1,0)) 10gpon_num,SUM(IF(technical='XG PON',1,0)),SUM(IF(technical='XGS PON',1,0)),SUM(IF(technical like 'Combo PON(XG PON)',1,0)),SUM(IF(technical='Combo PON(XGS PON)',1,0)),count(*) olt_sum
         FROM (SELECT DISTINCT station,company,olt_name,ip,technical,pon_board_number,pon_port_number FROM merge_table) as a
@@ -114,16 +114,16 @@
                                    technical VARCHAR(255) DEFAULT null COMMENT '技术制式',
                                    pon_board_number VARCHAR(255) DEFAULT null COMMENT 'PON板号',
                                    pon_port_number VARCHAR(255) DEFAULT null COMMENT 'PON口号',
-                                   channel1_in_peek_max VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值最大值',
-                                   channel2_in_peek_max VARCHAR(255) DEFAULT null COMMENT '通道2流入峰值最大值',
-                                   channel1_in_avg_max VARCHAR(255) DEFAULT null COMMENT '通道1均值最大值',
-                                   channel2_in_avg_max VARCHAR(255) DEFAULT null COMMENT '通道2均值最大值',
-                                   channel1_in_pred_max VARCHAR(255) DEFAULT null COMMENT '通道1预测流量最大值',
-                                   channel2_in_pred_max VARCHAR(255) DEFAULT null COMMENT '通道2预测流量最大值',
+                                   channel1_out_peek_max VARCHAR(255) DEFAULT null COMMENT '通道1流出峰值最大值',
+                                   channel2_out_peek_max VARCHAR(255) DEFAULT null COMMENT '通道2流出峰值最大值',
+                                   channel1_out_avg_max VARCHAR(255) DEFAULT null COMMENT '通道1均值最大值',
+                                   channel2_out_avg_max VARCHAR(255) DEFAULT null COMMENT '通道2均值最大值',
+                                   channel1_out_pred_max VARCHAR(255) DEFAULT null COMMENT '通道1预测流量最大值',
+                                   channel2_out_pred_max VARCHAR(255) DEFAULT null COMMENT '通道2预测流量最大值',
                                    channel1_tendency VARCHAR(255) DEFAULT null COMMENT '通道1趋势线',
                                    channel2_tendency VARCHAR(255) DEFAULT null COMMENT '通道2趋势线',
-                                   channel1_in_peek_max_time VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值最大值采集时间',
-                                   channel2_in_peek_max_time VARCHAR(255) DEFAULT null COMMENT '通道2流入峰值最大值采集时间',
+                                   channel1_out_peek_max_time VARCHAR(255) DEFAULT null COMMENT '通道1流出峰值最大值采集时间',
+                                   channel2_out_peek_max_time VARCHAR(255) DEFAULT null COMMENT '通道2流出峰值最大值采集时间',
                                    PRIMARY KEY (id),
                                    INDEX (pon_board_number,pon_port_number),
                                    INDEX(olt_name)
@@ -133,20 +133,20 @@
 
 
     <insert id="insertPlanTable1">
-        set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-        INSERT INTO plan_table(olt_concat,olt_name,technical,pon_board_number,pon_port_number,channel1_in_peek_max,channel2_in_peek_max,channel1_in_avg_max,channel2_in_avg_max ,channel1_in_peek_max_time,channel2_in_peek_max_time)
-        SELECT CONCAT(`olt_name`,'_',`pon_board_number`,'_',`pon_port_number`),olt_name,technical,pon_board_number,pon_port_number,max(channel1_in_peek) channel1_in_peek_max ,MAX(channel2_in_peek) channel2_in_peek_max ,max(channel1_in_avg) channel1_in_avg_max,max(channel2_in_avg) channel2_in_avg_max,channel1_in_peek_time,channel2_in_peek_time
-        from (SELECT DISTINCT olt_name,ip,technical,pon_board_number,pon_port_number,channel1_in_peek,channel2_in_peek,channel1_in_avg,channel2_in_avg,channel1_in_peek_time,channel2_in_peek_time FROM merge_table where channel1_in_peek_time between #{time1} and #{time2}) a
-        GROUP BY pon_board_number,pon_port_number;
+        set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_in_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+        INSERT INTO plan_table(olt_concat,olt_name,technical,pon_board_number,pon_port_number,channel1_out_peek_max,channel2_out_peek_max,channel1_out_avg_max,channel2_out_avg_max ,channel1_out_peek_max_time,channel2_out_peek_max_time)
+        SELECT DISTINCT CONCAT(a.`olt_name`,'_',a.`pon_board_number`,'_',a.`pon_port_number`),a.olt_name,a.technical,a.pon_board_number,a.pon_port_number,a.channel1_out_peek as channel1_out_peek ,channel2_out_peek channel2_out_peek_max ,channel1_out_avg channel1_out_avg_max,channel2_out_avg channel2_out_avg_max,channel1_out_peek_time,channel2_out_peek_time
+        from merge_table a,(SELECT olt_name,pon_board_number,pon_port_number,max(channel1_out_peek) max_value from merge_table where channel1_out_peek_time between #{time1} and #{time2} GROUP BY olt_name,pon_board_number,pon_port_number) b
+        WHERE a.olt_name = b.olt_name and a.pon_board_number = b.pon_board_number and a.pon_port_number = b.pon_port_number and a.channel1_out_peek = b.max_value;
     </insert>
 
     <select id="getPlanTable" resultType="java.util.LinkedHashMap">
-        select id,olt_concat,olt_name,technical,pon_board_number,pon_port_number,channel1_in_peek_max,channel1_in_avg_max,channel2_in_peek_max,channel2_in_avg_max ,DATE_FORMAT(channel1_in_peek_max_time,'%Y-%m-%d %H-%i-%s') as channel1_in_peek_max_time,DATE_FORMAT(channel2_in_peek_max_time,'%Y-%m-%d %H-%i-%s') channel2_time from plan_table where olt_name = #{OLT_name};
+        select id,olt_concat,olt_name,technical,pon_board_number,pon_port_number,channel1_out_peek_max,channel1_out_avg_max,channel2_out_peek_max,channel2_out_avg_max ,DATE_FORMAT(channel1_out_peek_max_time,'%Y-%m-%d %H-%i-%s') as channel1_out_peek_max_time,DATE_FORMAT(channel2_out_peek_max_time,'%Y-%m-%d %H-%i-%s') channel2_out_peek_max_time from plan_table where olt_name = #{OLT_name};
     </select>
 
 
     <select id="getChannel1InPeek" resultType="double">
-        SELECT channel1_in_avg from merge_table
+        SELECT channel1_out_avg from merge_table
         WHERE olt_name = #{OLTName} and pon_board_number =  #{PONBoard} and pon_port_number = #{PONPort};
     </select>
 
@@ -165,16 +165,16 @@
                                             ip VARCHAR(255) DEFAULT null COMMENT 'OLT管理IP',
                                             pon_board_number VARCHAR(255) DEFAULT null COMMENT 'PON板号',
                                             pon_port_number VARCHAR(255) DEFAULT null COMMENT 'PON口号',
-                                            channel1_in_peek_max float(5) DEFAULT null COMMENT '通道1流入峰值最大值',
-                                            channel2_in_peek_max float(5) DEFAULT null COMMENT '通道2流入峰值最大值',
-                                            channel1_in_avg_max float(5) DEFAULT null COMMENT '通道1均值最大值',
-                                            channel2_in_avg_max float(5) DEFAULT null COMMENT '通道2均值最大值',
-                                            channel1_in_pred_max float(5) DEFAULT null COMMENT '通道1预测流量最大值',
-                                            channel2_in_pred_max float(5) DEFAULT null COMMENT '通道2预测流量最大值',
+                                            channel1_out_peek_max float(5) DEFAULT null COMMENT '通道1流出峰值最大值',
+                                            channel2_out_peek_max float(5) DEFAULT null COMMENT '通道2流出峰值最大值',
+                                            channel1_out_avg_max float(5) DEFAULT null COMMENT '通道1均值最大值',
+                                            channel2_out_avg_max float(5) DEFAULT null COMMENT '通道2均值最大值',
+                                            channel1_out_pred_max float(5) DEFAULT null COMMENT '通道1预测流量最大值',
+                                            channel2_out_pred_max float(5) DEFAULT null COMMENT '通道2预测流量最大值',
                                             channel1_tendency int(2) DEFAULT null COMMENT '通道1趋势线',
                                             channel2_tendency int(2) DEFAULT null COMMENT '通道2趋势线',
-                                            channel1_in_peek_max_time VARCHAR(255) DEFAULT null COMMENT '通道1流入峰值最大值采集时间',
-                                            channel2_in_peek_max_time VARCHAR(255)DEFAULT null COMMENT '通道2流入峰值最大值采集时间',
+                                            channel1_out_peek_max_time VARCHAR(255) DEFAULT null COMMENT '通道1流出峰值最大值采集时间',
+                                            channel2_out_peek_max_time VARCHAR(255)DEFAULT null COMMENT '通道2流出峰值最大值采集时间',
                                             synthesis_value FLOAT(5) DEFAULT null COMMENT '综合值',
                                             PRIMARY KEY (id),
                                             INDEX (pon_board_number,pon_port_number),
@@ -183,13 +183,13 @@
     </update>
 
     <insert id="insertStandardOLTChosenTable">
-        insert into standard_plan_table(olt_concat,olt_name,pon_board_number,pon_port_number,channel1_in_peek_max,channel2_in_peek_max,channel1_in_avg_max,channel2_in_avg_max ,channel1_in_peek_max_time,channel2_in_peek_max_time) values
+        insert into standard_plan_table(olt_concat,olt_name,pon_board_number,pon_port_number,channel1_out_peek_max,channel2_out_peek_max,channel1_out_avg_max,channel2_out_avg_max ,channel1_out_peek_max_time,channel2_out_peek_max_time) values
         (#{oltConcat},#{oltName},#{ponBoardNumber},#{ponPortNumber},#{channel1InPeekMax},#{channel2InAvgMax},#{channel1InAvgMax},#{channel2InAvgMax},#{channel1InPeekMaxTime},#{channel2InPeekMaxTime})
 
     </insert>
 
     <update id="updateStandardOLTChosenTable">
-        UPDATE standard_plan_table set synthesis_value = channel1_in_peek_max * #{value1} + channel1_in_avg_max * #{value2} + channel2_in_peek_max * #{value3} + channel2_in_peek_max * #{value4};
+        UPDATE standard_plan_table set synthesis_value = channel1_out_peek_max * #{value1} + channel1_out_avg_max * #{value2} + channel2_out_peek_max * #{value3} + channel2_out_peek_max * #{value4};
     </update>
 
     <select id="getStandardOLTChosenTable" resultType="java.util.LinkedHashMap">
@@ -198,6 +198,6 @@
     </select>
 
     <select id="getMigrationTable" resultType="java.util.LinkedHashMap">
-        select id,olt_name,pon_port_number,pon_board_number,technical,channel1_in_peek_max,channel2_in_peek_max from plan_table where id = #{id};
+        select id,olt_name,pon_port_number,pon_board_number,technical,channel1_out_peek_max,channel2_out_peek_max from plan_table where id = #{id};
     </select>
 </mapper>
