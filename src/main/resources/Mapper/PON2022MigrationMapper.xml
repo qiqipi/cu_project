@@ -191,8 +191,8 @@
     </update>
 
     <insert id="insertStandardOLTChosenTable">
-        insert into standard_plan_table(olt_concat,olt_name,pon_board_number,pon_port_number,channel1_out_peek_max,channel2_out_peek_max,channel1_out_avg_max,channel2_out_avg_max ,channel1_out_peek_max_time,channel2_out_peek_max_time) values
-        (#{oltConcat},#{oltName},#{ponBoardNumber},#{ponPortNumber},#{channel1InPeekMax},#{channel2InAvgMax},#{channel1InAvgMax},#{channel2InAvgMax},#{channel1InPeekMaxTime},#{channel2InPeekMaxTime})
+        insert into standard_plan_table(olt_concat,olt_name,pon_board_number,pon_port_number,channel1_out_peek_max,channel2_out_peek_max,channel1_out_avg_max,channel2_out_avg_max ,channel1_out_peek_max_time,channel2_out_peek_max_time,channel1_out_pred_max,channel2_out_pred_max,channel1_tendency,channel2_tendency) values
+        (#{oltConcat},#{oltName},#{ponBoardNumber},#{ponPortNumber},#{channel1InPeekMax},#{channel2InAvgMax},#{channel1InAvgMax},#{channel2InAvgMax},#{channel1InPeekMaxTime},#{channel2InPeekMaxTime},#{channel1OutPredMax},#{channel2OutPredMax},#{channel1Tendency},#{channel2Tendency})
 
     </insert>
 
@@ -209,9 +209,8 @@
 
 
     <select id="getStandardOLTChosenTable2" resultType="java.util.LinkedHashMap">
-        select * from plan_table a LEFT JOIN (SELECT olt_concat,synthesis_value1 from standard_plan_table) b on a.olt_concat = b.olt_concat
-        where a.channel2_out_peek_max_time is not null
-        order by  synthesis_value1 DESC;
+        select * from plan_table a LEFT JOIN (SELECT olt_concat,synthesis_value2 from standard_plan_table) b on a.olt_concat = b.olt_concat
+        order by  synthesis_value2 DESC;
     </select>
 
     <select id="getMigrationTable" resultType="java.util.LinkedHashMap">
