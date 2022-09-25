@@ -112,7 +112,7 @@ public class PON2022MigrationController {
 
     @RequestMapping(value = "/getRankTable",method = RequestMethod.GET)
     @ApiOperation(value = "获取排序表(表三)")
-    @ApiImplicitParam(name = "values",value = "(必填)values",paramType = "query",required = true,type = "String",defaultValue = "0.1,0.2,0.3,0.4")
+    @ApiImplicitParam(name = "values",value = "(必填)values",paramType = "query",required = true,type = "String",defaultValue = "0.1,0.2,0.3,0.4,1")
     @ResponseBody
     public Result getRankTable(@RequestParam String[] values){
         List<Map<String, Object>> rank_table = null;

@@ -2,6 +2,7 @@ package com.liantong.demo_part2.Service.Impl;
 
 import com.liantong.demo_part2.Mapper.PON2022MigrationMapper;
 import com.liantong.demo_part2.Service.PON2022MigrationService;
+import com.liantong.demo_part2.Utils.ComputeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,12 +47,25 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
             for(Map<String,Object> planTable : planTables){
                 String  PONBoard = (String) planTable.get("pon_board_number");
                 String  PONPort = (String) planTable.get("pon_port_number");
-                pon2022MigrationMapper.updatePred(OLT_name,"111.9","channel1_out_pred_max",PONBoard,PONPort);
-                pon2022MigrationMapper.updatePred(OLT_name,"112.9","channel2_out_pred_max",PONBoard,PONPort);
+
+                pon2022MigrationMapper.updatePlanTable(OLT_name,"111.9","channel1_out_pred_max",PONBoard,PONPort);
+                //流量预测
                 planTable.put("channel1_out_pred_max",111.9);
-                planTable.put("channel1_out_pred_max",112.9);
                 planTable.put("channel1_tendency",1);
-                planTable.put("channel2_tendency",0);
+                //利用率计算
+                String trafficUsage1 = ComputeUtils.computeTrafficUsage1((String) planTable.get("channel1_out_peek_max"),(String) planTable.get("technical"));
+                planTable.put("channel1_out_peek_max_usage", trafficUsage1);
+                pon2022MigrationMapper.updatePlanTable(OLT_name,trafficUsage1,"channel1_out_peek_max_usage",PONBoard,PONPort);
+                if(planTable.containsKey("channel2_out_peek_max")){
+                    //通道2预测
+                    pon2022MigrationMapper.updatePlanTable(OLT_name,"112.9","channel2_out_pred_max",PONBoard,PONPort);
+                    planTable.put("channel2_out_pred_max",112.9);
+                    planTable.put("channel2_tendency",0);
+                    //通道2利用率
+                    String trafficUsage2 = ComputeUtils.computeTrafficUsage2((String) planTable.get("channel2_out_peek_max"),(String) planTable.get("technical"));
+                    planTable.put("channel2_out_peek_max_usage", trafficUsage2);
+                    pon2022MigrationMapper.updatePlanTable(OLT_name,trafficUsage2,"channel2_out_peek_max_usage",PONBoard,PONPort);
+                }
 //                double predict1 = getPredict1(OLT_name, PONBoard, PONPort);
 //                planTable.put("channel1_out_pred_max",predict1);
 //                channelInPeekPreMax1 = Math.max(channelInPeekPreMax1,predict1);
@@ -100,8 +114,13 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
     public List<Map<String, Object>> getRank_table(String values[]){
         pon2022MigrationMapper.updateStandardOLTChosenTable(values[0],values[1],values[2],values[3]);
         System.out.println("综合值计算成功");
+        List<Map<String, Object>> standardOLTChosenTable;
+        if(values[4].equals("1")){
+            standardOLTChosenTable = pon2022MigrationMapper.getStandardOLTChosenTable1();
+        }else {
+            standardOLTChosenTable = pon2022MigrationMapper.getStandardOLTChosenTable2();
+        }
 
-        List<Map<String, Object>> standardOLTChosenTable = pon2022MigrationMapper.getStandardOLTChosenTable();
         return standardOLTChosenTable;
     }
 

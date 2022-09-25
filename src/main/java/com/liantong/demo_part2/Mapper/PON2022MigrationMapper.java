@@ -41,7 +41,7 @@ public interface PON2022MigrationMapper {
     @MapKey("id")
     List<Double> getChannel1InPeek(String OLTName,String PONBoard,String PONPort);
 
-    void updatePred(String OLTName, String  value, String fieldName, String PONBoard, String PONPort);
+    void updatePlanTable(String OLTName, String  value, String fieldName, String PONBoard, String PONPort);
 
     void createStandardOLTChosenTable();
 
@@ -49,7 +49,10 @@ public interface PON2022MigrationMapper {
 
     void updateStandardOLTChosenTable(String value1,String value2,String value3,String value4);
 
-    List<Map<String ,Object >> getStandardOLTChosenTable();
+    @MapKey("id")
+    List<Map<String ,Object >> getStandardOLTChosenTable1();
+    @MapKey("id")
+    List<Map<String ,Object >> getStandardOLTChosenTable2();
 
     Map<String ,Object> getMigrationTable(String id);
 
