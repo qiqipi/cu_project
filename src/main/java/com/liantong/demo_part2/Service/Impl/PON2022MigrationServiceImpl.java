@@ -5,6 +5,7 @@ import com.liantong.demo_part2.Service.PON2022MigrationService;
 import com.liantong.demo_part2.Utils.ComputeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import springfox.documentation.spring.web.readers.operation.CachingOperationNameGenerator;
 
 import javax.annotation.Resource;
 import java.sql.Date;
@@ -47,10 +48,12 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
             for(Map<String,Object> planTable : planTables){
                 String  PONBoard = (String) planTable.get("pon_board_number");
                 String  PONPort = (String) planTable.get("pon_port_number");
-
-                pon2022MigrationMapper.updatePlanTable(OLT_name,"111.9","channel1_out_pred_max",PONBoard,PONPort);
+                String  OLTName = (String) planTable.get("olt_name");
                 //流量预测
-                planTable.put("channel1_out_pred_max",111.9);
+                String trafficPred1 = ComputeUtils.getPredict(pon2022MigrationMapper.getChannel1InPeek(OLTName, PONBoard, PONPort));
+                pon2022MigrationMapper.updatePlanTable(OLT_name,trafficPred1,"channel1_out_pred_max",PONBoard,PONPort);
+                planTable.put("channel1_out_pred_max",trafficPred1);
+                //趋势线
                 planTable.put("channel1_tendency",1);
                 //利用率计算
                 String trafficUsage1 = ComputeUtils.computeTrafficUsage1((String) planTable.get("channel1_out_peek_max"),(String) planTable.get("technical"));
@@ -58,9 +61,9 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
                 pon2022MigrationMapper.updatePlanTable(OLT_name,trafficUsage1,"channel1_out_peek_max_usage",PONBoard,PONPort);
                 if(planTable.containsKey("channel2_out_peek_max")){
                     //通道2预测
-                    pon2022MigrationMapper.updatePlanTable(OLT_name,"112.9","channel2_out_pred_max",PONBoard,PONPort);
-                    planTable.put("channel2_out_pred_max",112.9);
-                    planTable.put("channel2_tendency",0);
+                    String trafficPred2 = ComputeUtils.getPredict(pon2022MigrationMapper.getChannel2InPeek(OLTName, PONBoard, PONPort));
+                    pon2022MigrationMapper.updatePlanTable(OLT_name,trafficPred2,"channel2_out_pred_max",PONBoard,PONPort);
+                    planTable.put("channel2_out_pred_max",trafficPred2);
                     //通道2利用率
                     String trafficUsage2 = ComputeUtils.computeTrafficUsage2((String) planTable.get("channel2_out_peek_max"),(String) planTable.get("technical"));
                     planTable.put("channel2_out_peek_max_usage", trafficUsage2);
@@ -183,48 +186,6 @@ public class PON2022MigrationServiceImpl implements PON2022MigrationService {
         return res;
     }
 
-
-    @Override
-    public double getPredict1(String OLTName, String PONBoard, String PONPort) {
-        List<Double> list = pon2022MigrationMapper.getChannel1InPeek(OLTName,PONBoard,PONPort);
-        double [] data = new double[list.size()];
-        for(int i = 0;i < list.size();i++){
-            data[i] = list.get(i);
-        }
-        double[] newData = data.clone();
-        int count = newData.length;
-        double s = 0.0;
-        int i = 0;
-        while (i<=30){
-            s = 0.0;
-            for (int j = 0; j < count; j++)
-            {
-                s += (j + 1) * newData[j];
-            }
-            s /= (count * (count + 1) / 2);
-            for (int j = 0; j < count - 1; j++)
-            {
-                newData[j] = newData[j + 1];
-            }
-            newData[count - 1] = s;
-
-            double nd =newData[newData.length-1];
-            double cs = 0;
-            int js = 0;
-            for(int h=0; h<newData.length-1; h++){
-                cs = newData[h];
-                if(nd == cs){
-                    js++;
-                }
-            }
-            if(js == newData.length-1){
-                break;
-            }
-            i++;
-        }
-        String  str = String.format("%.2f",s);
-        return Double.parseDouble(str);
-    }
 
 
 

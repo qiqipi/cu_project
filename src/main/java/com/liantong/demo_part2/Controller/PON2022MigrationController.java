@@ -146,12 +146,10 @@ public class PON2022MigrationController {
     @ResponseBody
     public String[] getChosenFields(){
         String s[] = new String[8];
-        s[0] = "通道1流入峰值最大值";
-        s[1] = "通道2流入峰值最大值";
-        s[2] = "通道1均值最大值";
-        s[3] = "通道2均值最大值";
-        s[4] = "通道1预测流量最大值";
-        s[5] = "通道2预测流量最大值";
+        s[0] = "流入峰值最大值";
+        s[1] = "均值最大值";
+        s[2] = "预测流量值";
+        s[3] = "趋势线斜率";
         return s;
     }
 

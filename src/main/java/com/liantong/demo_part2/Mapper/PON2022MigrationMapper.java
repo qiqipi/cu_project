@@ -41,6 +41,8 @@ public interface PON2022MigrationMapper {
     @MapKey("id")
     List<Double> getChannel1InPeek(String OLTName,String PONBoard,String PONPort);
 
+    List<Double> getChannel2InPeek(String OLTName,String PONBoard,String PONPort);
+
     void updatePlanTable(String OLTName, String  value, String fieldName, String PONBoard, String PONPort);
 
     void createStandardOLTChosenTable();

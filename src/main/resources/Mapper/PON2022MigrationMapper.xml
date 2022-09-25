@@ -148,7 +148,12 @@
 
 
     <select id="getChannel1InPeek" resultType="double">
-        SELECT channel1_out_avg from merge_table
+        SELECT distinct channel1_out_peek from merge_table
+        WHERE olt_name = #{OLTName} and pon_board_number =  #{PONBoard} and pon_port_number = #{PONPort};
+    </select>
+
+    <select id="getChannel2InPeek" resultType="double">
+        SELECT distinct channel2_out_peek from merge_table
         WHERE olt_name = #{OLTName} and pon_board_number =  #{PONBoard} and pon_port_number = #{PONPort};
     </select>
 
